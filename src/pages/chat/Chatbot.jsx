@@ -14,10 +14,49 @@ import {
   Grid,
   Avatar,
   Alert,
-  InputAdornment
+  InputAdornment,
+  CardContent
 } from '@mui/material';
 import { SendOutlined, SettingOutlined, RobotOutlined, UserOutlined, LockOutlined, StarOutlined } from '@ant-design/icons';
 
+const SAMPLE_PROMPTS = [
+  {
+    title: "Marketing Content",
+    suggestions: [
+      "Viết content quảng cáo cho font chữ mới",
+      "Tạo caption Instagram cho studio thiết kế",
+      "Viết bài blog về xu hướng typography 2024",
+      "Tạo email marketing cho khóa học thiết kế"
+    ]
+  },
+  {
+    title: "Ý Tưởng Sáng Tạo",
+    suggestions: [
+      "Gợi ý phối font chữ cho thương hiệu thời trang",
+      "Ý tưởng thiết kế logo sử dụng font script",
+      "Cách kết hợp màu sắc và typography hiệu quả",
+      "Xu hướng thiết kế bao bì sử dụng typography"
+    ]
+  },
+  {
+    title: "Lập Kế Hoạch",
+    suggestions: [
+      "Lên lịch học khóa Typography cơ bản",
+      "Tạo roadmap học thiết kế 6 tháng",
+      "Lập kế hoạch marketing cho studio",
+      "Xây dựng portfolio thiết kế chữ"
+    ]
+  },
+  {
+    title: "Hỏi Đáp Dịch Vụ",
+    suggestions: [
+      "So sánh gói Free và Premium",
+      "Cách nâng cấp tài khoản Premium",
+      "Chính sách sử dụng font thương mại",
+      "Quy trình mua và download font"
+    ]
+  }
+];
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -25,25 +64,7 @@ const Chatbot = () => {
   const [openSettings, setOpenSettings] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const messagesEndRef = useRef(null);
-
-  const samplePrompts = [
-    {
-      title: "Giải thích code",
-      description: "Giải thích đoạn code này hoạt động như thế nào?"
-    },
-    {
-      title: "Debug code",
-      description: "Giúp tôi tìm lỗi trong đoạn code này"
-    },
-    {
-      title: "Tối ưu code",
-      description: "Làm thế nào để tối ưu đoạn code này?"
-    },
-    {
-      title: "Viết test",
-      description: "Viết unit test cho function này"
-    }
-  ];
+  const [isPremium] = useState(false); // Get from auth context
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,7 +77,18 @@ const Chatbot = () => {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    // Add user message
+    if (!isPremium) {
+      setMessages([
+        ...messages,
+        { 
+          text: "Tính năng này chỉ dành cho người dùng Premium. Vui lòng nâng cấp tài khoản để sử dụng.",
+          sender: 'bot',
+          timestamp: new Date()
+        }
+      ]);
+      return;
+    }
+
     setMessages([
       ...messages,
       { text: input, sender: 'user', timestamp: new Date() }
@@ -85,181 +117,112 @@ const Chatbot = () => {
   };
 
   const handlePromptClick = (prompt) => {
-    setInput(prompt.description);
+    setInput(prompt);
   };
 
   return (
-    <Box sx={{ height: '90vh', display: 'flex' }}>
-      {/* Left Sidebar - Chat History */}
-      <Box
-        sx={{
-          width: 240,
-          borderRight: '1px solid',
-          borderColor: 'divider',
-          p: 2,
-          display: { xs: 'none', sm: 'block' }
-        }}
-      >
-        <Button
-          variant="outlined"
-          fullWidth
-          startIcon={<RobotOutlined />}
-          onClick={() => setMessages([])}
-          sx={{ mb: 2 }}
-        >
-          New Chat
-        </Button>
-        <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary' }}>
-          Previous Chats
-        </Typography>
-        {/* Chat history list */}
-        <Box sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-          {[1, 2, 3].map((item) => (
-            <Button
-              key={item}
-              fullWidth
-              sx={{
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                mb: 1,
-                px: 2
-              }}
-            >
-              <Typography noWrap>Previous Chat {item}</Typography>
-            </Button>
-          ))}
-        </Box>
-      </Box>
-
-      {/* Main Chat Area */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Pro Feature Alert */}
+    <Box sx={{ height: '90vh', display: 'flex', flexDirection: 'column', p: 2 }}>
+      {!isPremium && (
         <Alert 
           severity="info" 
-          sx={{ m: 2 }}
+          sx={{ mb: 2 }}
           action={
             <Button color="inherit" size="small" startIcon={<StarOutlined />}>
-              Upgrade to Pro
+              Nâng cấp Premium
             </Button>
           }
         >
-          Unlock advanced features with Pro: Code completion, longer context, priority support
+          Nâng cấp tài khoản Premium để sử dụng AI Assistant và nhiều tính năng khác
         </Alert>
+      )}
 
-        {/* Messages Area */}
-        <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
-          {messages.length === 0 ? (
-            // Show sample prompts when no messages
-            <Grid container spacing={2} sx={{ p: 2 }}>
-              {samplePrompts.map((prompt, index) => (
-                <Grid item xs={12} sm={6} key={index}>
-                  <Card
-                    sx={{
-                      p: 2,
-                      cursor: 'pointer',
-                      '&:hover': { bgcolor: 'action.hover' }
-                    }}
-                    onClick={() => handlePromptClick(prompt)}
-                  >
-                    <Typography variant="subtitle1">{prompt.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {prompt.description}
+      {/* Messages Area */}
+      <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
+        {messages.length === 0 ? (
+          // Show sample prompts when no messages
+          <Grid container spacing={2}>
+            {SAMPLE_PROMPTS.map((category, index) => (
+              <Grid item xs={12} md={6} key={index}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {category.title}
                     </Typography>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            // Show messages
-            messages.map((message, index) => (
-              <Box
-                key={index}
+                    {category.suggestions.map((prompt, i) => (
+                      <Typography
+                        key={i}
+                        variant="body2"
+                        sx={{
+                          cursor: 'pointer',
+                          p: 1,
+                          '&:hover': { bgcolor: 'action.hover' },
+                          borderRadius: 1
+                        }}
+                        onClick={() => handlePromptClick(prompt)}
+                      >
+                        {prompt}
+                      </Typography>
+                    ))}
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          // Show messages
+          messages.map((message, index) => (
+            <Box
+              key={index}
+              sx={{
+                display: 'flex',
+                mb: 2,
+                bgcolor: message.sender === 'bot' ? 'action.hover' : 'transparent',
+                p: 2,
+                borderRadius: 2
+              }}
+            >
+              <Avatar
                 sx={{
-                  display: 'flex',
-                  mb: 2,
-                  bgcolor: message.sender === 'bot' ? 'action.hover' : 'transparent',
-                  p: 2
+                  bgcolor: message.sender === 'bot' ? 'primary.main' : 'secondary.main',
+                  mr: 2
                 }}
               >
-                <Avatar
-                  sx={{
-                    bgcolor: message.sender === 'bot' ? 'primary.main' : 'secondary.main',
-                    mr: 2
-                  }}
-                >
-                  {message.sender === 'bot' ? <RobotOutlined /> : <UserOutlined />}
-                </Avatar>
-                <Box sx={{ flex: 1 }}>
-                  <Typography>{message.text}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {message.timestamp.toLocaleTimeString()}
-                  </Typography>
-                </Box>
+                {message.sender === 'bot' ? <RobotOutlined /> : <UserOutlined />}
+              </Avatar>
+              <Box sx={{ flex: 1 }}>
+                <Typography>{message.text}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {message.timestamp.toLocaleTimeString()}
+                </Typography>
               </Box>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-        </Box>
-
-        {/* Input Area */}
-        <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-          <TextField
-            fullWidth
-            multiline
-            maxRows={4}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message here..."
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setOpenSettings(true)}>
-                    <SettingOutlined />
-                  </IconButton>
-                  <IconButton onClick={handleSend} disabled={!input.trim()}>
-                    <SendOutlined />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Press Enter to send, Shift + Enter for new line
-          </Typography>
-        </Box>
+            </Box>
+          ))
+        )}
+        <div ref={messagesEndRef} />
       </Box>
 
-      {/* API Key Settings Dialog */}
-      <Dialog open={openSettings} onClose={() => setOpenSettings(false)}>
-        <DialogTitle>API Settings</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="API Key"
-            type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            margin="normal"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockOutlined />
-                </InputAdornment>
-              )
-            }}
-          />
-          <Typography variant="caption" color="text.secondary">
-            Your API key is stored locally and never shared
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenSettings(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => setOpenSettings(false)}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Input Area */}
+      <Paper sx={{ p: 2, mt: 2 }}>
+        <TextField
+          fullWidth
+          multiline
+          maxRows={4}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder={isPremium ? "Nhập câu hỏi của bạn..." : "Nâng cấp Premium để sử dụng tính năng này"}
+          disabled={!isPremium}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleSend} disabled={!isPremium || !input.trim()}>
+                  <SendOutlined />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        />
+      </Paper>
     </Box>
   );
 };

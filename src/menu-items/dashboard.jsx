@@ -24,7 +24,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'users',
+      id: 'admin-users',
       title: 'Users',
       type: 'item',
       url: '/admin/users',
@@ -32,7 +32,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'course',
+      id: 'admin-courses',
       title: 'Course',
       type: 'item',
       url: '/admin/courses',
@@ -40,7 +40,7 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'font',
+      id: 'admin-fonts',
       title: 'Font',
       type: 'item',
       url: '/admin/fonts',

@@ -12,43 +12,43 @@ const icons = {
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
 
 const pages = {
-  id: 'authentication',
+  id: 'guest',
   title: 'Heytext',
   type: 'group',
   children: [
     {
-      id: 'font',
+      id: 'guest-fonts',
       title: 'Font',
       type: 'item',
       url: '/fonts',
       icon: icons.FontColorsOutlined,
-      target: true
+      breadcrumbs: false,
+      // target: true
     },
     {
-      id: 'chat',
+      id: 'guest-chat',
       title: 'Chatbot',
       type: 'item',
       url: '/chat',
       icon: icons.WechatWorkOutlined,
-      target: true,
       breadcrumbs: false
     },
     {
-      id: 'course',
+      id: 'guest-courses',
       title: 'Course',
       type: 'item',
-      url: '/course',
+      url: '/courses',
       icon: icons.WechatWorkOutlined,
-      target: true
+      breadcrumbs: false
     },
     {
-      id: 'package',
-      title: 'Package',
+      id: 'guest-subscription',
+      title: 'Subscription',
       type: 'item',
-      url: '/package',
+      url: '/subscription',
       icon: icons.WechatWorkOutlined,
-      target: true
-    }
+      breadcrumbs: false
+    },
   ]
 };
 
