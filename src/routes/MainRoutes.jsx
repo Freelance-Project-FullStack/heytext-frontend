@@ -12,6 +12,15 @@ const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
 
+// admin pages
+const UserManagement = Loadable(lazy(() => import('pages/admin/UserManagement')));
+const FontManagement = Loadable(lazy(() => import('pages/admin/FontManagement')));
+const CourseManagement = Loadable(lazy(() => import('pages/admin/CourseManagement')));
+
+const FontSelector = Loadable(lazy(() => import('pages/fonts/FontSelector')));
+
+const Chatbot = Loadable(lazy(() => import('pages/chat/Chatbot')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -46,6 +55,31 @@ const MainRoutes = {
     {
       path: 'typography',
       element: <Typography />
+    },
+    {
+      path: 'admin',
+      children: [
+        {
+          path: 'users',
+          element: <UserManagement />
+        },
+        {
+          path: 'fonts',
+          element: <FontManagement />
+        },
+        {
+          path: 'courses',
+          element: <CourseManagement />
+        }
+      ]
+    },
+    {
+      path: 'fonts',
+      element: <FontSelector />
+    },
+    {
+      path: 'chat',
+      element: <Chatbot />
     }
   ]
 };

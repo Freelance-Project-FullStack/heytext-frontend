@@ -20,7 +20,7 @@ const pages = {
       id: 'font',
       title: 'Font',
       type: 'item',
-      url: '/font',
+      url: '/fonts',
       icon: icons.FontColorsOutlined,
       target: true
     },
@@ -30,7 +30,8 @@ const pages = {
       type: 'item',
       url: '/chat',
       icon: icons.WechatWorkOutlined,
-      target: true
+      target: true,
+      breadcrumbs: false
     },
     {
       id: 'course',

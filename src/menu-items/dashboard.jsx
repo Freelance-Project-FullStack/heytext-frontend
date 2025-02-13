@@ -27,7 +27,7 @@ const dashboard = {
       id: 'users',
       title: 'Users',
       type: 'item',
-      url: '/dashboard/user',
+      url: '/admin/users',
       icon: icons.UserOutlined,
       breadcrumbs: false
     },
@@ -35,7 +35,7 @@ const dashboard = {
       id: 'course',
       title: 'Course',
       type: 'item',
-      url: '/dashboard/course',
+      url: '/admin/courses',
       icon: icons.CodeSandboxOutlined,
       breadcrumbs: false
     },
@@ -43,7 +43,7 @@ const dashboard = {
       id: 'font',
       title: 'Font',
       type: 'item',
-      url: '/dashboard/font',
+      url: '/admin/fonts',
       icon: icons.FontColorsOutlined,
       breadcrumbs: false
     }
