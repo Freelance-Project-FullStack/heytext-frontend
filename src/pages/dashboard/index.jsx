@@ -1,246 +1,268 @@
-// material-ui
-import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import {
+  BookOutlined,
+  CrownOutlined,
+  DollarOutlined,
+  DownloadOutlined,
+  FontColorsOutlined,
+  RiseOutlined,
+  UserOutlined
+} from '@ant-design/icons';
+import {
+  Box,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Typography
+} from '@mui/material';
+// import { DatePicker } from '@mui/x-date-pickers';
+import { useState } from 'react';
 
 // project import
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import MonthlyBarChart from './MonthlyBarChart';
-import ReportAreaChart from './ReportAreaChart';
-import UniqueVisitorCard from './UniqueVisitorCard';
-import SaleReportCard from './SaleReportCard';
-import OrdersTable from './OrdersTable';
 
-// assets
-import GiftOutlined from '@ant-design/icons/GiftOutlined';
-import MessageOutlined from '@ant-design/icons/MessageOutlined';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
-import avatar1 from 'assets/images/users/avatar-1.png';
-import avatar2 from 'assets/images/users/avatar-2.png';
-import avatar3 from 'assets/images/users/avatar-3.png';
-import avatar4 from 'assets/images/users/avatar-4.png';
+// charts
+import { Line, Pie } from '@ant-design/plots';
 
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: '1rem'
-};
+const DashboardDefault = () => {
+  const [dateRange, setDateRange] = useState([null, null]);
 
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-  transform: 'none'
-};
-
-// ==============================|| DASHBOARD - DEFAULT ||============================== //
-
-export default function DashboardDefault() {
   return (
-    <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-      {/* row 1 */}
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Typography variant="h5">Dashboard</Typography>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
+    <Box sx={{ p: 3 }}>
+      {/* Header with Date Range */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h4">Thống kê tổng quan</Typography>
+        {/* <DatePicker.RangePicker 
+          value={dateRange}
+          onChange={setDateRange}
+        /> */}
+      </Box>
+
+      {/* User Statistics */}
+      <Typography variant="h5" sx={{ mb: 2 }}>Thống kê người dùng</Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Tổng người dùng"
+            count="8,250"
+            percentage={12.3}
+            extra="Tháng trước: 7,345"
+            icon={<UserOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Người dùng Premium"
+            count="2,900"
+            percentage={8.6}
+            extra="35% tổng user"
+            icon={<CrownOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Người dùng mới"
+            count="950"
+            percentage={27.4}
+            extra="Tháng này"
+            icon={<RiseOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Tỷ lệ chuyển đổi"
+            count="32.5%"
+            percentage={4.2}
+            extra="Free → Premium"
+            icon={<RiseOutlined />}
+          />
+        </Grid>
       </Grid>
 
-      <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
-
-      {/* row 2 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <UniqueVisitorCard />
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Income Overview</Typography>
-          </Grid>
-          <Grid item />
+      {/* Revenue Statistics */}
+      <Typography variant="h5" sx={{ mb: 2 }}>Thống kê doanh thu</Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={8}>
+          <MainCard title="Doanh thu theo thời gian">
+            <Line
+              data={revenueData}
+              xField="date"
+              yField="amount"
+              seriesField="type"
+              legend={{ position: 'top' }}
+            />
+          </MainCard>
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <Box sx={{ p: 3, pb: 0 }}>
-            <Stack spacing={2}>
-              <Typography variant="h6" color="text.secondary">
-                This Week Statistics
-              </Typography>
-              <Typography variant="h3">$7,650</Typography>
-            </Stack>
-          </Box>
-          <MonthlyBarChart />
-        </MainCard>
-      </Grid>
-
-      {/* row 3 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Recent Orders</Typography>
-          </Grid>
-          <Grid item />
+        <Grid item xs={12} md={4}>
+          <MainCard title="Phân bổ doanh thu">
+            <Pie
+              data={revenueDistribution}
+              angleField="value"
+              colorField="type"
+              radius={0.8}
+              label={{ type: 'outer' }}
+            />
+          </MainCard>
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <OrdersTable />
-        </MainCard>
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Analytics Report</Typography>
-          </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
-            <ListItemButton divider>
-              <ListItemText primary="Company Finance Growth" />
-              <Typography variant="h5">+45.14%</Typography>
-            </ListItemButton>
-            <ListItemButton divider>
-              <ListItemText primary="Company Expenses Ratio" />
-              <Typography variant="h5">0.58%</Typography>
-            </ListItemButton>
-            <ListItemButton>
-              <ListItemText primary="Business Risk Cases" />
-              <Typography variant="h5">Low</Typography>
-            </ListItemButton>
-          </List>
-          <ReportAreaChart />
-        </MainCard>
       </Grid>
 
-      {/* row 4 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <SaleReportCard />
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Transaction History</Typography>
-          </Grid>
-          <Grid item />
+      {/* Font Statistics */}
+      <Typography variant="h5" sx={{ mb: 2 }}>Thống kê font chữ</Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Tổng font"
+            count="1,250"
+            percentage={15.2}
+            extra="Premium: 850"
+            icon={<FontColorsOutlined />}
+          />
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <List
-            component="nav"
-            sx={{
-              px: 0,
-              py: 0,
-              '& .MuiListItemButton-root': {
-                py: 1.5,
-                '& .MuiAvatar-root': avatarSX,
-                '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
-              }
-            }}
-          >
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'success.main', bgcolor: 'success.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="Today, 2:00 AM" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    + $1,430
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    78%
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'primary.main', bgcolor: 'primary.lighter' }}>
-                  <MessageOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #984947</Typography>} secondary="5 August, 1:45 PM" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    + $302
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    8%
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-            <ListItemButton>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <SettingOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #988784</Typography>} secondary="7 hours ago" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    + $682
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    16%
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-          </List>
-        </MainCard>
-        <MainCard sx={{ mt: 2 }}>
-          <Stack spacing={3}>
-            <Grid container justifyContent="space-between" alignItems="center">
-              <Grid item>
-                <Stack>
-                  <Typography variant="h5" noWrap>
-                    Help & Support Chat
-                  </Typography>
-                  <Typography variant="caption" color="secondary" noWrap>
-                    Typical replay within 5 min
-                  </Typography>
-                </Stack>
-              </Grid>
-              <Grid item>
-                <AvatarGroup sx={{ '& .MuiAvatar-root': { width: 32, height: 32 } }}>
-                  <Avatar alt="Remy Sharp" src={avatar1} />
-                  <Avatar alt="Travis Howard" src={avatar2} />
-                  <Avatar alt="Cindy Baker" src={avatar3} />
-                  <Avatar alt="Agnes Walker" src={avatar4} />
-                </AvatarGroup>
-              </Grid>
-            </Grid>
-            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
-              Need Help?
-            </Button>
-          </Stack>
-        </MainCard>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Lượt tải font"
+            count="18,800"
+            percentage={22.4}
+            extra="Tháng này: 2,430"
+            icon={<DownloadOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Doanh thu font"
+            count="32,5M"
+            percentage={18.2}
+            extra="Tháng này"
+            icon={<DollarOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Font mới"
+            count="45"
+            percentage={12.8}
+            extra="Tháng này"
+            icon={<FontColorsOutlined />}
+          />
+        </Grid>
       </Grid>
-    </Grid>
+
+      {/* Course Statistics */}
+      <Typography variant="h5" sx={{ mb: 2 }}>Thống kê khóa học</Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Tổng khóa học"
+            count="25"
+            percentage={8.4}
+            extra="Active: 22"
+            icon={<BookOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Học viên"
+            count="3,850"
+            percentage={16.2}
+            extra="Tháng này: +320"
+            icon={<UserOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Doanh thu khóa học"
+            count="28,2M"
+            percentage={14.8}
+            extra="Tháng này"
+            icon={<DollarOutlined />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <AnalyticEcommerce
+            title="Tỷ lệ hoàn thành"
+            count="76.5%"
+            percentage={5.2}
+            extra="Trung bình"
+            icon={<RiseOutlined />}
+          />
+        </Grid>
+      </Grid>
+
+      {/* Top Performers */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <MainCard title="Top Font được tải xuống">
+            <List>
+              {topFonts.map((font, index) => (
+                <ListItem key={font.id} divider>
+                  <ListItemText
+                    primary={font.name}
+                    secondary={`${font.downloads.toLocaleString()} lượt tải`}
+                  />
+                  <Typography color="primary">
+                    {font.revenue.toLocaleString()}đ
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </MainCard>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <MainCard title="Top khóa học">
+            <List>
+              {topCourses.map((course, index) => (
+                <ListItem key={course.id} divider>
+                  <ListItemText
+                    primary={course.name}
+                    secondary={`${course.students.toLocaleString()} học viên`}
+                  />
+                  <Typography color="primary">
+                    {course.revenue.toLocaleString()}đ
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </MainCard>
+        </Grid>
+      </Grid>
+    </Box>
   );
-}
+};
+
+// Mock data
+const revenueData = [
+  { date: '2024-01', type: 'Font Sales', amount: 15000000 },
+  { date: '2024-01', type: 'Premium Users', amount: 25000000 },
+  { date: '2024-01', type: 'Courses', amount: 18000000 },
+  { date: '2024-02', type: 'Font Sales', amount: 18000000 },
+  { date: '2024-02', type: 'Premium Users', amount: 28000000 },
+  { date: '2024-02', type: 'Courses', amount: 20000000 },
+  { date: '2024-03', type: 'Font Sales', amount: 22000000 },
+  { date: '2024-03', type: 'Premium Users', amount: 32000000 },
+  { date: '2024-03', type: 'Courses', amount: 25000000 }
+];
+
+const revenueDistribution = [
+  { type: 'Font Sales', value: 35 },
+  { type: 'Premium Users', value: 45 },
+  { type: 'Courses', value: 20 }
+];
+
+const topFonts = [
+  { id: 1, name: 'Arial Pro', downloads: 2500, revenue: 25000000 },
+  { id: 2, name: 'Helvetica Now', downloads: 2100, revenue: 21000000 },
+  { id: 3, name: 'Montserrat Plus', downloads: 1800, revenue: 18000000 },
+  { id: 4, name: 'Roboto Premium', downloads: 1500, revenue: 15000000 },
+  { id: 5, name: 'Open Sans Pro', downloads: 1200, revenue: 12000000 }
+];
+
+const topCourses = [
+  { id: 1, name: 'Typography Masterclass', students: 850, revenue: 42500000 },
+  { id: 2, name: 'Font Design Basic', students: 720, revenue: 36000000 },
+  { id: 3, name: 'Digital Branding', students: 650, revenue: 32500000 },
+  { id: 4, name: 'Logo Design Pro', students: 580, revenue: 29000000 },
+  { id: 5, name: 'UI Typography', students: 520, revenue: 26000000 }
+];
+
+export default DashboardDefault;

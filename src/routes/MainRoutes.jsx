@@ -16,6 +16,7 @@ const FontSelector = Loadable(lazy(() => import('pages/fonts/FontSelector')));
 const Chatbot = Loadable(lazy(() => import('pages/chat/Chatbot')));
 const PricingPlans = Loadable(lazy(() => import('pages/subscription/PricingPlans')));
 const CourseList = Loadable(lazy(() => import('pages/courses/CourseList')));
+const Profile = Loadable(lazy(() => import('pages/profile/Profile')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -43,7 +44,10 @@ const MainRoutes = {
       path: 'subscription',
       element: <PricingPlans />
     },
-    
+    {
+      path: 'profile',
+      element: <Profile />
+    },
     {
       path: 'admin',
       children: [

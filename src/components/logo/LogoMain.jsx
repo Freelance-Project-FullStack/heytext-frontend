@@ -23,8 +23,8 @@ const Logo = () => {
      */
     <>
       <svg width="118" height="35" viewBox="0 0 118 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <text x="10" y="25" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="black">H</text>
-        <text x="30" y="25" font-family="Arial, sans-serif" font-size="16" fill="black">heytext</text>
+        <text x="10" y="25" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="black">H</text>
+        <text x="30" y="25" fontFamily="Arial, sans-serif" fontSize="16" fill="black">heytext</text>
       </svg>
     </>
   );

@@ -1,4 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 
 // project import
 import router from 'routes';
@@ -10,10 +12,12 @@ import ScrollTop from 'components/ScrollTop';
 
 export default function App() {
   return (
-    <ThemeCustomization>
-      <ScrollTop>
-        <RouterProvider router={router} />
-      </ScrollTop>
-    </ThemeCustomization>
+    <Provider store={store}>
+      <ThemeCustomization>
+        <ScrollTop>
+          <RouterProvider router={router} />
+        </ScrollTop>
+      </ThemeCustomization>
+    </Provider>
   );
 }

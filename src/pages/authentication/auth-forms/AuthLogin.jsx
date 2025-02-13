@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
@@ -20,12 +21,15 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
-import axios from 'axios'; // import axios for API requests
+import { login } from 'store/reducers/auth';
 
 export default function AuthLogin() {
   const [checked, setChecked] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [apiError, setApiError] = React.useState(null);
+  
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -35,25 +39,16 @@ export default function AuthLogin() {
     event.preventDefault();
   };
 
-  const handleLogin = async (values) => {
+  const handleLogin = async (values, { setSubmitting }) => {
     try {
-      // Replace with your API endpoint and adjust the payload accordingly
-      const response = await axios.post('/api/auth/login', {
+      await dispatch(login({
         email: values.email,
         password: values.password
-      });
-
-      if (response.data.success) {
-        // Handle successful login
-        console.log('Login successful:', response.data);
-        // Redirect or update UI accordingly
-      } else {
-        // Handle API response error
-        setApiError(response.data.message || 'Login failed.');
-      }
-    } catch (error) {
-      console.error('Error during API call:', error);
-      setApiError('An error occurred. Please try again later.');
+      })).unwrap();
+      navigate('/dashboard');
+    } catch (err) {
+      // Error is handled by the reducer
+      setSubmitting(false);
     }
   };
 
@@ -149,9 +144,9 @@ export default function AuthLogin() {
                   </Link>
                 </Stack>
               </Grid>
-              {apiError && (
+              {error && (
                 <Grid item xs={12}>
-                  <FormHelperText error>{apiError}</FormHelperText>
+                  <FormHelperText error>{error}</FormHelperText>
                 </Grid>
               )}
               {errors.submit && (
@@ -161,8 +156,16 @@ export default function AuthLogin() {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Login
+                  <Button 
+                    disableElevation 
+                    disabled={isSubmitting || loading} 
+                    fullWidth 
+                    size="large" 
+                    type="submit" 
+                    variant="contained" 
+                    color="primary"
+                  >
+                    {loading ? 'Logging in...' : 'Login'}
                   </Button>
                 </AnimateButton>
               </Grid>
