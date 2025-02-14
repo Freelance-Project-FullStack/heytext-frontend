@@ -24,14 +24,19 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
-import EyeOutlined from '@ant-design/icons/EyeOutlined';
-import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
+import { signup } from 'store/reducers/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 // ============================|| JWT - REGISTER ||============================ //
 
 export default function AuthRegister() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const { loading, error } = useSelector((state) => state.auth);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -43,6 +48,24 @@ export default function AuthRegister() {
   const changePassword = (value) => {
     const temp = strengthIndicator(value);
     setLevel(strengthColor(temp));
+  };
+
+  const handleLSignup = async (values, { setSubmitting }) => {
+    try {
+      await dispatch(
+        signup({
+          email: values.email,
+          password: values.password,
+          name: values.fullname,
+          phone: values.phone,
+          loginMethod: 'manual'
+        })
+      ).unwrap();
+      navigate('/fonts');
+    } catch (err) {
+      setError(err.message);
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -68,10 +91,21 @@ export default function AuthRegister() {
           email: Yup.string().email('Phải là email hợp lệ').max(255).required('Email là bắt buộc'),
           password: Yup.string().max(255).required('Mật khẩu là bắt buộc')
         })}
+        onSubmit={handleLSignup}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
+              {errors.submit && (
+                <Grid item xs={12}>
+                  <FormHelperText error>{errors.submit}</FormHelperText>
+                </Grid>
+              )}
+              {error && (
+                <Grid item xs={12}>
+                  <FormHelperText error>{error}</FormHelperText>
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="fullname-signup">Họ và Tên*</InputLabel>
@@ -203,8 +237,16 @@ export default function AuthRegister() {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Tạo Tài Khoản
+                  <Button
+                    disableElevation
+                    disabled={isSubmitting || loading}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    {loading ? 'Đang Tạo Tài Khoản...' : 'Tạo Tài Khoản'}
                   </Button>
                 </AnimateButton>
               </Grid>

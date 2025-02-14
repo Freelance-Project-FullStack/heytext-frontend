@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -29,6 +29,7 @@ export default function AuthLogin() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading, error } = useSelector((state) => state.auth);
 
   const handleClickShowPassword = () => {
@@ -41,15 +42,30 @@ export default function AuthLogin() {
 
   const handleLogin = async (values, { setSubmitting }) => {
     try {
-      await dispatch(
+      const result = await dispatch(
         login({
           email: values.email,
           password: values.password
         })
       ).unwrap();
-      navigate('/dashboard');
+
+      const redirectPath = location.state?.from || getDefaultRedirect(result.user.role);
+      navigate(redirectPath);
     } catch (err) {
       setSubmitting(false);
+    }
+  };
+
+  const getDefaultRedirect = (role) => {
+    switch (role) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'premium':
+        return '/fonts/premium';
+      case 'instructor':
+        return '/instructor/courses';
+      default:
+        return '/fonts';
     }
   };
 
