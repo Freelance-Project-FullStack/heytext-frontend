@@ -23,7 +23,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { updateProfile, logout } from 'store/slices/profileSlice';
+import { updateProfile, logout } from 'store/reducers/profile';
 import axios from 'axios';
 
 const Profile = () => {

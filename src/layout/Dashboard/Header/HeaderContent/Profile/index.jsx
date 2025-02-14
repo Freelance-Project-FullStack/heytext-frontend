@@ -29,6 +29,9 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import { useDispatch } from 'react-redux';
+import { logout } from 'store/reducers/auth';
+import { useNavigate } from 'react-router-dom';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -50,6 +53,8 @@ function a11yProps(index) {
 
 export default function Profile() {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -68,6 +73,11 @@ export default function Profile() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
   };
 
   const iconBackColorOpen = 'grey.100';
@@ -132,7 +142,7 @@ export default function Profile() {
                         </Stack>
                       </Grid>
                       <Grid item>
-                        <Tooltip title="Logout">
+                        <Tooltip title="Logout" onClick={handleLogout}>
                           <IconButton size="large" sx={{ color: 'text.primary' }}>
                             <LogoutOutlined />
                           </IconButton>
