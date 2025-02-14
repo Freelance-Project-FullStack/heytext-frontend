@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
+import PrivateRoute from 'components/PrivateRoute';
 
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
@@ -18,6 +19,7 @@ const PricingPlans = Loadable(lazy(() => import('pages/subscription/PricingPlans
 const CourseList = Loadable(lazy(() => import('pages/courses/CourseList')));
 const Profile = Loadable(lazy(() => import('pages/profile/Profile')));
 const Settings = Loadable(lazy(() => import('pages/admin/Settings')));
+const AdminDashboard = Loadable(lazy(() => import('pages/dashboard')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -54,25 +56,45 @@ const MainRoutes = {
       children: [
         {
           path: 'users',
-          element: <UserManagement />
+          element: (
+            <PrivateRoute allowedRoles={['admin']}>
+              <UserManagement />
+            </PrivateRoute>
+          )
         },
         {
           path: 'fonts',
-          element: <FontManagement />
+          element: (
+            <PrivateRoute allowedRoles={['admin']}>
+              <FontManagement />
+            </PrivateRoute>
+          )
         },
         {
           path: 'courses',
-          element: <CourseManagement />
+          element: (
+            <PrivateRoute allowedRoles={['admin']}>
+              <CourseManagement />
+            </PrivateRoute>
+          )
         },
         {
           path: 'settings',
-          element: <Settings />
+          element: (
+            <PrivateRoute allowedRoles={['admin']}>
+              <Settings />
+            </PrivateRoute>
+          )
         }
       ]
     },
     {
       path: 'fonts',
-      element: <FontSelector />
+      element: (
+        <PrivateRoute allowedRoles={['admin', 'premium', 'user']}>
+          <FontSelector />
+        </PrivateRoute>
+      )
     },
     {
       path: 'chat',
@@ -81,6 +103,14 @@ const MainRoutes = {
     {
       path: 'courses',
       element: <CourseList />
+    },
+    {
+      path: 'admin/dashboard',
+      element: (
+        <PrivateRoute allowedRoles={['admin']}>
+          <AdminDashboard />
+        </PrivateRoute>
+      )
     }
   ]
 };

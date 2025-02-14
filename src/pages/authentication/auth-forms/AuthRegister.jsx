@@ -60,7 +60,7 @@ export default function AuthRegister() {
           phone: values.phone,
           loginMethod: 'manual'
         })
-      ).unwrap();
+      );
       navigate('/fonts');
     } catch (err) {
       setError(err.message);

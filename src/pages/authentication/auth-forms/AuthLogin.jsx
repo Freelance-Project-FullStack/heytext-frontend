@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
@@ -22,15 +22,17 @@ import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
 import { login } from 'store/reducers/auth';
+import { Box } from '@mui/material';
 
-export default function AuthLogin() {
+const AuthLogin = () => {
   const [checked, setChecked] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [error, setError] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -47,25 +49,14 @@ export default function AuthLogin() {
           email: values.email,
           password: values.password
         })
-      ).unwrap();
+      );
 
-      const redirectPath = location.state?.from || getDefaultRedirect(result.user.role);
-      navigate(redirectPath);
+      const redirectPath = location.state?.from || result.redirectPath;
+      navigate(redirectPath, { replace: true });
     } catch (err) {
+      console.log(err.message);
+      setError(err.response?.data?.message || 'Đăng nhập thất bại');
       setSubmitting(false);
-    }
-  };
-
-  const getDefaultRedirect = (role) => {
-    switch (role) {
-      case 'admin':
-        return '/admin/dashboard';
-      case 'premium':
-        return '/fonts/premium';
-      case 'instructor':
-        return '/instructor/courses';
-      default:
-        return '/fonts';
     }
   };
 
@@ -78,13 +69,20 @@ export default function AuthLogin() {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Phải là email hợp lệ').max(255).required('Email là bắt buộc'),
-          password: Yup.string().max(255).required('Mật khẩu là bắt buộc')
+          email: Yup.string().email('Email không hợp lệ').max(255).required('Vui lòng nhập email'),
+          password: Yup.string().max(255).required('Vui lòng nhập mật khẩu')
         })}
         onSubmit={handleLogin}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
+            {error && (
+              <Box sx={{ mb: 2 }}>
+                <Typography color="error" variant="body2">
+                  {error}
+                </Typography>
+              </Box>
+            )}
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
@@ -161,11 +159,6 @@ export default function AuthLogin() {
                   </Link>
                 </Stack>
               </Grid>
-              {error && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{error}</FormHelperText>
-                </Grid>
-              )}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
@@ -200,6 +193,8 @@ export default function AuthLogin() {
       </Formik>
     </>
   );
-}
+};
 
 AuthLogin.propTypes = { isDemo: PropTypes.bool };
+
+export default AuthLogin;
