@@ -39,46 +39,34 @@ const ProfileTab = () => {
 
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-      <ListItemButton 
-        selected={selectedIndex === 0} 
-        onClick={(event) => handleListItemClick(event, 0, '/profile')}
-      >
+      <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0, '/profile')}>
         <ListItemIcon>
           <EditOutlined />
         </ListItemIcon>
         <ListItemText primary="Edit Profile" />
       </ListItemButton>
-      
-      <ListItemButton 
-        selected={selectedIndex === 1} 
-        onClick={(event) => handleListItemClick(event, 1, '/profile')}
-      >
+
+      <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1, '/profile')}>
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
         <ListItemText primary="View Profile" />
       </ListItemButton>
 
-      <ListItemButton 
-        selected={selectedIndex === 3} 
-        onClick={(event) => handleListItemClick(event, 3, '/profile')}
-      >
+      <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3, '/profile')}>
         <ListItemIcon>
           <ProfileOutlined />
         </ListItemIcon>
         <ListItemText primary="Social Profile" />
       </ListItemButton>
-      
-      <ListItemButton 
-        selected={selectedIndex === 4} 
-        onClick={(event) => handleListItemClick(event, 4, '/billing')}
-      >
+
+      <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4, '/billing')}>
         <ListItemIcon>
           <WalletOutlined />
         </ListItemIcon>
         <ListItemText primary="Billing" />
       </ListItemButton>
-      
+
       <ListItemButton onClick={handleLogout}>
         <ListItemIcon>
           <LogoutOutlined />

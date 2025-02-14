@@ -50,10 +50,10 @@ export const login = (credentials) => async (dispatch) => {
     dispatch(setLoading(true));
     const response = await axios.post(`${API_URL}/users/login`, credentials);
     const { token, user } = response.data;
-    
+
     // Set token in axios headers
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    
+
     dispatch(loginSuccess({ token, user }));
     return response.data;
   } catch (error) {
@@ -68,4 +68,4 @@ export const logout = () => (dispatch) => {
   dispatch(logoutSuccess());
 };
 
-export default authSlice.reducer; 
+export default authSlice.reducer;
