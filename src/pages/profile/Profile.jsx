@@ -1,69 +1,118 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'contexts/auth-reducer/useAuth';
-import { authService } from 'contexts/auth-reducer/auth';
 import {
+  BookOutlined,
+  CrownOutlined,
+  EditOutlined,
+  FontColorsOutlined,
+  HistoryOutlined,
+  LogoutOutlined
+} from '@ant-design/icons';
+import {
+  Avatar,
   Box,
-  Grid,
+  Button,
   Card,
   CardContent,
-  Typography,
-  Avatar,
-  Button,
-  TextField,
-  Tabs,
-  Tab,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
   List,
   ListItem,
   ListItemText,
-  ListItemSecondary,
-  Chip,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
+  Tab,
+  Tabs,
+  TextField,
+  Typography
 } from '@mui/material';
-import {
-  EditOutlined,
-  UserOutlined,
-  LockOutlined,
-  HistoryOutlined,
-  CrownOutlined,
-  FontColorsOutlined,
-  BookOutlined,
-  LogoutOutlined
-} from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { updateProfile, logout } from 'store/slices/profileSlice';
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { dispatch, state } = useAuth();
+  
+  // Replace context with Redux selectors
+  const { user, fontDownloads, courses, payments } = useSelector((state) => state.profile);
+  
   const [currentTab, setCurrentTab] = useState(0);
   const [openEdit, setOpenEdit] = useState(false);
   const [openPassword, setOpenPassword] = useState(false);
-  
-  const [profile, setProfile] = useState({
-    name: state.user?.name || 'John Doe',
-    email: state.user?.email || 'john@example.com',
-    avatar: state.user?.avatar || '/path/to/avatar.jpg',
-    subscription: {
-      plan: state.user?.subscription?.plan || 'Free',
-      validUntil: state.user?.subscription?.validUntil || '2024-12-31',
-      features: [
-        'Không giới hạn download font',
-        'Truy cập AI Assistant',
-        'Truy cập khóa học premium'
-      ]
-    }
+  const [editForm, setEditForm] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    avatar: user?.avatar || ''
   });
 
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
+  // Update handlers
+  const handleProfileUpdate = () => {
+    dispatch(updateProfile(editForm));
+    setOpenEdit(false);
   };
 
   const handleLogout = () => {
-    authService.logout(dispatch);
+    dispatch(logout());
     navigate('/login');
+  };
+
+  const handleEditFormChange = (e) => {
+    setEditForm({
+      ...editForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Update the Edit Profile Dialog content
+  const editDialogContent = (
+    <DialogContent>
+      <Box sx={{ pt: 2 }}>
+        <TextField
+          fullWidth
+          label="Họ tên"
+          name="name"
+          value={editForm.name}
+          onChange={handleEditFormChange}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          fullWidth
+          label="Email"
+          name="email"
+          value={editForm.email}
+          onChange={handleEditFormChange}
+          sx={{ mb: 2 }}
+        />
+        <Button
+          variant="outlined"
+          component="label"
+          fullWidth
+        >
+          Thay đổi ảnh đại diện
+          <input 
+            type="file" 
+            hidden 
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                // Handle file upload logic here
+                setEditForm({
+                  ...editForm,
+                  avatar: URL.createObjectURL(file)
+                });
+              }
+            }}
+          />
+        </Button>
+      </Box>
+    </DialogContent>
+  );
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
   };
 
   return (
@@ -74,14 +123,14 @@ const Profile = () => {
           <Card>
             <CardContent sx={{ textAlign: 'center' }}>
               <Avatar
-                src={profile.avatar}
+                src={user?.avatar}
                 sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
               />
               <Typography variant="h5" gutterBottom>
-                {profile.name}
+                {user?.name}
               </Typography>
               <Typography color="text.secondary" gutterBottom>
-                {profile.email}
+                {user?.email}
               </Typography>
               <Button
                 variant="outlined"
@@ -100,14 +149,14 @@ const Profile = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <CrownOutlined style={{ fontSize: 24, marginRight: 8 }} />
                 <Typography variant="h6">
-                  Gói {profile.subscription.plan}
+                  Gói {user?.subscription?.plan}
                 </Typography>
               </Box>
               <Typography color="text.secondary" gutterBottom>
-                Hiệu lực đến: {profile.subscription.validUntil}
+                Hiệu lực đến: {user?.subscription?.validUntil}
               </Typography>
               <List dense>
-                {profile.subscription.features.map((feature, index) => (
+                {user?.subscription?.features.map((feature, index) => (
                   <ListItem key={index}>
                     <ListItemText primary={feature} />
                   </ListItem>
@@ -205,33 +254,10 @@ const Profile = () => {
       {/* Edit Profile Dialog */}
       <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
         <DialogTitle>Chỉnh sửa thông tin</DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <TextField
-              fullWidth
-              label="Họ tên"
-              value={profile.name}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
-              label="Email"
-              value={profile.email}
-              sx={{ mb: 2 }}
-            />
-            <Button
-              variant="outlined"
-              component="label"
-              fullWidth
-            >
-              Thay đổi ảnh đại diện
-              <input type="file" hidden accept="image/*" />
-            </Button>
-          </Box>
-        </DialogContent>
+        {editDialogContent}
         <DialogActions>
           <Button onClick={() => setOpenEdit(false)}>Hủy</Button>
-          <Button variant="contained">Lưu thay đổi</Button>
+          <Button variant="contained" onClick={handleProfileUpdate}>Lưu thay đổi</Button>
         </DialogActions>
       </Dialog>
 
