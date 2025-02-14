@@ -1,18 +1,19 @@
 // assets
-import { DashboardOutlined, UserOutlined, CodeSandboxOutlined, FontColorsOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UserOutlined, CodeSandboxOutlined, FontColorsOutlined, SettingOutlined } from '@ant-design/icons';
 // icons
 const icons = {
   DashboardOutlined,
   UserOutlined,
   CodeSandboxOutlined,
-  FontColorsOutlined
+  FontColorsOutlined,
+  SettingOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Admin',
+  title: 'Quản trị hệ thống',
   type: 'group',
   children: [
     {
@@ -25,7 +26,7 @@ const dashboard = {
     },
     {
       id: 'admin-users',
-      title: 'Users',
+      title: 'Người dùng',
       type: 'item',
       url: '/admin/users',
       icon: icons.UserOutlined,
@@ -33,7 +34,7 @@ const dashboard = {
     },
     {
       id: 'admin-courses',
-      title: 'Course',
+      title: 'Khoá học',
       type: 'item',
       url: '/admin/courses',
       icon: icons.CodeSandboxOutlined,
@@ -45,6 +46,14 @@ const dashboard = {
       type: 'item',
       url: '/admin/fonts',
       icon: icons.FontColorsOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'admin-settings',
+      title: 'Cài đặt',
+      type: 'item',
+      url: '/admin/settings',
+      icon: icons.SettingOutlined,
       breadcrumbs: false
     }
   ]

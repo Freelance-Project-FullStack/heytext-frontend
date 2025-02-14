@@ -92,14 +92,14 @@ export default function Profile() {
           '&:hover': { bgcolor: 'secondary.lighter' },
           '&:focus-visible': { outline: `2px solid ${theme.palette.secondary.dark}`, outlineOffset: 2 }
         }}
-        aria-label="open profile"
+        aria-label="hồ sơ"
         ref={anchorRef}
         aria-controls={open ? 'profile-grow' : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
       >
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
-          <Avatar alt="profile user" src={avatar1} size="sm" />
+          <Avatar alt="người dùng" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
             John Doe
           </Typography>
@@ -132,17 +132,17 @@ export default function Profile() {
                     <Grid container justifyContent="space-between" alignItems="center">
                       <Grid item>
                         <Stack direction="row" spacing={1.25} alignItems="center">
-                          <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
+                          <Avatar alt="người dùng" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
                             <Typography variant="h6">John Doe</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
+                              Nhà thiết kế UI/UX
                             </Typography>
                           </Stack>
                         </Stack>
                       </Grid>
                       <Grid item>
-                        <Tooltip title="Logout" onClick={handleLogout}>
+                        <Tooltip title="Đăng xuất" onClick={handleLogout}>
                           <IconButton size="large" sx={{ color: 'text.primary' }}>
                             <LogoutOutlined />
                           </IconButton>
@@ -152,7 +152,7 @@ export default function Profile() {
                   </CardContent>
 
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
+                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="tab hồ sơ">
                       <Tab
                         sx={{
                           display: 'flex',
@@ -162,7 +162,7 @@ export default function Profile() {
                           textTransform: 'capitalize'
                         }}
                         icon={<UserOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Profile"
+                        label="Hồ sơ"
                         {...a11yProps(0)}
                       />
                       <Tab
@@ -174,7 +174,7 @@ export default function Profile() {
                           textTransform: 'capitalize'
                         }}
                         icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Setting"
+                        label="Cài đặt"
                         {...a11yProps(1)}
                       />
                     </Tabs>

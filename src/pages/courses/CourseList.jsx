@@ -18,8 +18,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
-  Divider
+  ListItemText
 } from '@mui/material';
 import {
   SearchOutlined,
@@ -30,19 +29,12 @@ import {
   ShoppingCartOutlined
 } from '@ant-design/icons';
 
-const COURSE_CATEGORIES = [
-  'Typography Cơ bản',
-  'Thiết kế Logo',
-  'Branding',
-  'UI/UX Design',
-  'Font Design'
-];
+const COURSE_CATEGORIES = ['Typography Cơ bản', 'Thiết kế Logo', 'Branding', 'UI/UX Design', 'Font Design'];
 
 const CourseList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [openCourse, setOpenCourse] = useState(null);
-  const [openPayment, setOpenPayment] = useState(false);
 
   const courses = [
     {
@@ -56,21 +48,9 @@ const CourseList = () => {
       duration: '20 giờ',
       category: 'Typography Cơ bản',
       instructor: 'John Designer',
-      lessons: [
-        'Giới thiệu về Typography',
-        'Các nguyên tắc cơ bản',
-        'Phân loại font chữ',
-        'Kỹ thuật phối font',
-        'Thực hành thiết kế'
-      ],
-      features: [
-        'Truy cập trọn đời',
-        'Chứng chỉ hoàn thành',
-        'Bài tập thực hành',
-        'Hỗ trợ 1-1',
-        'File thiết kế mẫu'
-      ]
-    },
+      lessons: ['Giới thiệu về Typography', 'Các nguyên tắc cơ bản', 'Phân loại font chữ', 'Kỹ thuật phối font', 'Thực hành thiết kế'],
+      features: ['Truy cập trọn đời', 'Chứng chỉ hoàn thành', 'Bài tập thực hành', 'Hỗ trợ 1-1', 'File thiết kế mẫu']
+    }
     // Thêm các khóa học khác
   ];
 
@@ -82,7 +62,7 @@ const CourseList = () => {
     setSelectedCategory(category === selectedCategory ? 'all' : category);
   };
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -94,7 +74,7 @@ const CourseList = () => {
       const response = await fetch('/api/payment/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           amount: course.price,
@@ -105,7 +85,7 @@ const CourseList = () => {
       });
 
       const data = await response.json();
-      
+
       // Chuyển hướng đến trang thanh toán VNPay
       if (data.paymentUrl) {
         window.location.href = data.paymentUrl;
@@ -152,12 +132,7 @@ const CourseList = () => {
         {filteredCourses.map((course) => (
           <Grid item xs={12} sm={6} md={4} key={course.id}>
             <Card>
-              <CardMedia
-                component="img"
-                height="200"
-                image={course.thumbnail}
-                alt={course.title}
-              />
+              <CardMedia component="img" height="200" image={course.thumbnail} alt={course.title} />
               <CardContent>
                 <Typography variant="h6" gutterBottom>
                   {course.title}
@@ -165,7 +140,7 @@ const CourseList = () => {
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   {course.description}
                 </Typography>
-                
+
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <Rating value={course.rating} precision={0.1} readOnly size="small" />
                   <Typography variant="body2" sx={{ ml: 1 }}>
@@ -188,11 +163,7 @@ const CourseList = () => {
                   <Typography variant="h6" color="primary">
                     {course.price.toLocaleString()}đ
                   </Typography>
-                  <Button 
-                    variant="contained"
-                    startIcon={<ShoppingCartOutlined />}
-                    onClick={() => setOpenCourse(course)}
-                  >
+                  <Button variant="contained" startIcon={<ShoppingCartOutlined />} onClick={() => setOpenCourse(course)}>
                     Chi tiết
                   </Button>
                 </Box>
@@ -203,12 +174,7 @@ const CourseList = () => {
       </Grid>
 
       {/* Course Detail Dialog */}
-      <Dialog 
-        open={!!openCourse} 
-        onClose={() => setOpenCourse(null)}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={!!openCourse} onClose={() => setOpenCourse(null)} maxWidth="md" fullWidth>
         {openCourse && (
           <>
             <DialogTitle>
@@ -256,12 +222,7 @@ const CourseList = () => {
                 <Typography variant="h5" color="primary">
                   {openCourse.price.toLocaleString()}đ
                 </Typography>
-                <Button 
-                  variant="contained" 
-                  size="large"
-                  startIcon={<ShoppingCartOutlined />}
-                  onClick={() => handlePurchase(openCourse)}
-                >
+                <Button variant="contained" size="large" startIcon={<ShoppingCartOutlined />} onClick={() => handlePurchase(openCourse)}>
                   Mua khóa học
                 </Button>
               </Box>
@@ -273,4 +234,4 @@ const CourseList = () => {
   );
 };
 
-export default CourseList; 
+export default CourseList;

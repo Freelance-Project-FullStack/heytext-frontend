@@ -43,35 +43,35 @@ const ProfileTab = () => {
         <ListItemIcon>
           <EditOutlined />
         </ListItemIcon>
-        <ListItemText primary="Edit Profile" />
+        <ListItemText primary="Chỉnh sửa hồ sơ" />
       </ListItemButton>
 
       <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1, '/profile')}>
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
-        <ListItemText primary="View Profile" />
+        <ListItemText primary="Xem hồ sơ" />
       </ListItemButton>
 
       <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3, '/profile')}>
         <ListItemIcon>
           <ProfileOutlined />
         </ListItemIcon>
-        <ListItemText primary="Social Profile" />
+        <ListItemText primary="Mạng xã hội" />
       </ListItemButton>
 
       <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4, '/billing')}>
         <ListItemIcon>
           <WalletOutlined />
         </ListItemIcon>
-        <ListItemText primary="Billing" />
+        <ListItemText primary="Hóa đơn" />
       </ListItemButton>
 
       <ListItemButton onClick={handleLogout}>
         <ListItemIcon>
           <LogoutOutlined />
         </ListItemIcon>
-        <ListItemText primary="Logout" />
+        <ListItemText primary="Đăng xuất" />
       </ListItemButton>
     </List>
   );

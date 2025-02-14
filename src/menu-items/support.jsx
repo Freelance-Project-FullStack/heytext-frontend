@@ -11,7 +11,7 @@ const icons = {
 
 const support = {
   id: 'support',
-  title: 'Support',
+  title: 'Hỗ trợ',
   type: 'group',
   children: [
     {

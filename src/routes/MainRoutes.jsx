@@ -17,6 +17,7 @@ const Chatbot = Loadable(lazy(() => import('pages/chat/Chatbot')));
 const PricingPlans = Loadable(lazy(() => import('pages/subscription/PricingPlans')));
 const CourseList = Loadable(lazy(() => import('pages/courses/CourseList')));
 const Profile = Loadable(lazy(() => import('pages/profile/Profile')));
+const Settings = Loadable(lazy(() => import('pages/admin/Settings')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -62,6 +63,10 @@ const MainRoutes = {
         {
           path: 'courses',
           element: <CourseManagement />
+        },
+        {
+          path: 'settings',
+          element: <Settings />
         }
       ]
     },

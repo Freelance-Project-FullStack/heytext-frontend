@@ -22,7 +22,7 @@ const pages = {
       type: 'item',
       url: '/fonts',
       icon: icons.FontColorsOutlined,
-      breadcrumbs: false,
+      breadcrumbs: false
       // target: true
     },
     {
@@ -35,7 +35,7 @@ const pages = {
     },
     {
       id: 'guest-courses',
-      title: 'Course',
+      title: 'Khoá học',
       type: 'item',
       url: '/courses',
       icon: icons.WechatWorkOutlined,
@@ -48,7 +48,7 @@ const pages = {
       url: '/subscription',
       icon: icons.WechatWorkOutlined,
       breadcrumbs: false
-    },
+    }
   ]
 };
 

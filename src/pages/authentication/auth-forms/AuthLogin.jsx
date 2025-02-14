@@ -26,7 +26,7 @@ import { login } from 'store/reducers/auth';
 export default function AuthLogin() {
   const [checked, setChecked] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
@@ -41,13 +41,14 @@ export default function AuthLogin() {
 
   const handleLogin = async (values, { setSubmitting }) => {
     try {
-      await dispatch(login({
-        email: values.email,
-        password: values.password
-      })).unwrap();
+      await dispatch(
+        login({
+          email: values.email,
+          password: values.password
+        })
+      ).unwrap();
       navigate('/dashboard');
     } catch (err) {
-      // Error is handled by the reducer
       setSubmitting(false);
     }
   };
@@ -61,8 +62,8 @@ export default function AuthLogin() {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          email: Yup.string().email('Phải là email hợp lệ').max(255).required('Email là bắt buộc'),
+          password: Yup.string().max(255).required('Mật khẩu là bắt buộc')
         })}
         onSubmit={handleLogin}
       >
@@ -71,7 +72,7 @@ export default function AuthLogin() {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                  <InputLabel htmlFor="email-login">Địa chỉ Email</InputLabel>
                   <OutlinedInput
                     id="email-login"
                     type="email"
@@ -79,7 +80,7 @@ export default function AuthLogin() {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter email address"
+                    placeholder="Nhập địa chỉ email"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />
@@ -92,7 +93,7 @@ export default function AuthLogin() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-login">Password</InputLabel>
+                  <InputLabel htmlFor="password-login">Mật khẩu</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
@@ -115,7 +116,7 @@ export default function AuthLogin() {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
+                    placeholder="Nhập mật khẩu"
                   />
                 </Stack>
                 {touched.password && errors.password && (
@@ -137,10 +138,10 @@ export default function AuthLogin() {
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me signed in</Typography>}
+                    label={<Typography variant="h6">Lưu đăng nhập</Typography>}
                   />
                   <Link variant="h6" component={RouterLink} color="text.primary">
-                    Forgot Password?
+                    Quên mật khẩu?
                   </Link>
                 </Stack>
               </Grid>
@@ -156,22 +157,22 @@ export default function AuthLogin() {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button 
-                    disableElevation 
-                    disabled={isSubmitting || loading} 
-                    fullWidth 
-                    size="large" 
-                    type="submit" 
-                    variant="contained" 
+                  <Button
+                    disableElevation
+                    disabled={isSubmitting || loading}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
                     color="primary"
                   >
-                    {loading ? 'Logging in...' : 'Login'}
+                    {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                   </Button>
                 </AnimateButton>
               </Grid>
               <Grid item xs={12}>
                 <Divider>
-                  <Typography variant="caption">Login with</Typography>
+                  <Typography variant="caption">Đăng nhập bằng</Typography>
                 </Divider>
               </Grid>
               <Grid item xs={12}>

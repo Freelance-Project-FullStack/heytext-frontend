@@ -53,101 +53,80 @@ export default function AuthRegister() {
     <>
       <Formik
         initialValues={{
-          firstname: '',
-          lastname: '',
+          fullname: '',
+          phone: '',
           email: '',
           company: '',
           password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          firstname: Yup.string().max(255).required('First Name is required'),
-          lastname: Yup.string().max(255).required('Last Name is required'),
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          fullname: Yup.string().max(255).required('Họ và tên là bắt buộc'),
+          phone: Yup.string()
+            .matches(/^(\+84|0)\d{9}$/, 'Số điện thoại không hợp lệ')
+            .required('Số điện thoại là bắt buộc'),
+          email: Yup.string().email('Phải là email hợp lệ').max(255).required('Email là bắt buộc'),
+          password: Yup.string().max(255).required('Mật khẩu là bắt buộc')
         })}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="firstname-signup">First Name*</InputLabel>
+                  <InputLabel htmlFor="fullname-signup">Họ và Tên*</InputLabel>
                   <OutlinedInput
-                    id="firstname-login"
-                    type="firstname"
-                    value={values.firstname}
-                    name="firstname"
+                    id="fullname-signup"
+                    type="text"
+                    value={values.fullname}
+                    name="fullname"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="John"
+                    placeholder="Nguyễn Văn A"
                     fullWidth
-                    error={Boolean(touched.firstname && errors.firstname)}
+                    error={Boolean(touched.fullname && errors.fullname)}
                   />
                 </Stack>
-                {touched.firstname && errors.firstname && (
-                  <FormHelperText error id="helper-text-firstname-signup">
-                    {errors.firstname}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="lastname-signup">Last Name*</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.lastname && errors.lastname)}
-                    id="lastname-signup"
-                    type="lastname"
-                    value={values.lastname}
-                    name="lastname"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Doe"
-                    inputProps={{}}
-                  />
-                </Stack>
-                {touched.lastname && errors.lastname && (
-                  <FormHelperText error id="helper-text-lastname-signup">
-                    {errors.lastname}
+                {touched.fullname && errors.fullname && (
+                  <FormHelperText error id="helper-text-fullname-signup">
+                    {errors.fullname}
                   </FormHelperText>
                 )}
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="company-signup">Company</InputLabel>
+                  <InputLabel htmlFor="phone-signup">Số Điện Thoại*</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.company && errors.company)}
-                    id="company-signup"
-                    value={values.company}
-                    name="company"
+                    error={Boolean(touched.phone && errors.phone)}
+                    id="phone-signup"
+                    type="text"
+                    value={values.phone}
+                    name="phone"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Demo Inc."
-                    inputProps={{}}
+                    placeholder="0123456789"
                   />
                 </Stack>
-                {touched.company && errors.company && (
-                  <FormHelperText error id="helper-text-company-signup">
-                    {errors.company}
+                {touched.phone && errors.phone && (
+                  <FormHelperText error id="helper-text-phone-signup">
+                    {errors.phone}
                   </FormHelperText>
                 )}
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
+                  <InputLabel htmlFor="email-signup">Địa chỉ Email*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
-                    id="email-login"
+                    id="email-signup"
                     type="email"
                     value={values.email}
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="demo@company.com"
-                    inputProps={{}}
                   />
                 </Stack>
                 {touched.email && errors.email && (
@@ -158,7 +137,7 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password</InputLabel>
+                  <InputLabel htmlFor="password-signup">Mật khẩu</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
@@ -185,7 +164,6 @@ export default function AuthRegister() {
                       </InputAdornment>
                     }
                     placeholder="******"
-                    inputProps={{}}
                   />
                 </Stack>
                 {touched.password && errors.password && (
@@ -208,13 +186,13 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body2">
-                  By Signing up, you agree to our &nbsp;
+                  Bằng cách đăng ký, bạn đồng ý với &nbsp;
                   <Link variant="subtitle2" component={RouterLink} to="#">
-                    Terms of Service
+                    Điều khoản dịch vụ
                   </Link>
-                  &nbsp; and &nbsp;
+                  &nbsp; và &nbsp;
                   <Link variant="subtitle2" component={RouterLink} to="#">
-                    Privacy Policy
+                    Chính sách bảo mật
                   </Link>
                 </Typography>
               </Grid>
@@ -226,7 +204,7 @@ export default function AuthRegister() {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Create Account
+                    Tạo Tài Khoản
                   </Button>
                 </AnimateButton>
               </Grid>
