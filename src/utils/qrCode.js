@@ -4,31 +4,45 @@
  * @returns {string} Two digit length
  */
 const lengthFormat = (value) => {
-  const length = value.length.toString();
+  const length = String(String(value).length);
   return length.padStart(2, '0');
 };
 
-/**
- * Serializes data object into VietQR format
- * @param {object} data - Data object to serialize
- * @returns {string} Serialized data string
- */
-const serializeData = (data) => {
-  let result = '';
+function crc16(str) {
+  // Khởi tạo bảng CRC lookup
+  const crcTable = new Array(256);
+  const polynomial = 0x1021; // Polynomial CRC-16-CCITT
 
-  for (const [id, value] of Object.entries(data)) {
-    if (typeof value === 'object') {
-      result += id + lengthFormat(serializeData(value)) + serializeData(value);
-    } else {
-      result += id + lengthFormat(value) + value;
+  // Tạo bảng lookup
+  for (let i = 0; i < 256; i++) {
+    let crc = i << 8;
+    for (let j = 0; j < 8; j++) {
+      if (crc & 0x8000) {
+        crc = (crc << 1) ^ polynomial;
+      } else {
+        crc = crc << 1;
+      }
     }
+    crcTable[i] = crc & 0xffff;
   }
 
-  return result;
-};
+  // Chuyển đổi string thành mảng bytes
+  const bytes = new TextEncoder().encode(str);
 
+  // Tính CRC
+  let crc = 0xffff; // Giá trị khởi tạo
+
+  for (let i = 0; i < bytes.length; i++) {
+    const byte = bytes[i];
+    crc = ((crc << 8) & 0xffff) ^ crcTable[((crc >> 8) ^ byte) & 0xff];
+  }
+
+  // Trả về giá trị CRC16 dưới dạng hex
+  return crc.toString(16).toUpperCase().padStart(4, '0');
+}
 /**
  * Generates VietQR code data string
+ * @param {string} bankName - Banh name
  * @param {string} bankBin - Bank ID number
  * @param {string} accountNo - Account number
  * @param {string} accountName - Account holder name
@@ -36,42 +50,17 @@ const serializeData = (data) => {
  * @param {string} [message=""] - Optional payment message
  * @returns {string} QR code data string
  */
-export const generateVietQRString = (bankBin, accountNo, accountName, amount = '', message = '') => {
-  const consumerInfo = {
-    52: '5999', // Merchant Category Code for Individual
-    58: 'VN', // Country Code (VN)
-    53: '704' // Currency Code (VND)
-  };
-
-  // Initialize with payload format indicator
-  const data = {
-    '00': '01', // Version
-    '01': '11', // InitMethod (Static)
-    38: {
-      // Additional Consumer Data
-      '00': accountName, // Account name
-      '01': message // Additional info
-    }
-  };
-
-  // Merchant account information for VietQR
-  const merchantAccInfo = {
-    '00': 'A000000727', // VietQR application ID
-    '01': bankBin, // Bank BIN
-    '02': accountNo // Account number
-  };
-
-  data['30'] = serializeData(merchantAccInfo);
-
-  // Add amount if provided
-  if (amount) {
-    data['54'] = amount.toString();
+export const generateVietQRString = (bankBin, accountNo, accountName, amount = '', message = '', bankName) => {
+  try {
+    let qrString;
+    if (bankName == 'Vietcombank')
+      qrString = `00020101021238540010A00000072701240006${bankBin}01${String(accountNo).length}${accountNo}0208QRIBFTTA530370454${lengthFormat(amount)}${amount}5802VN62${lengthFormat(`08${lengthFormat(message)}${message}`)}08${lengthFormat(message)}${message}6304`;
+    if (bankName == 'TPBank')
+      qrString = `000201010211153139700704005204460000${accountNo}38550010A0000007270125000697042301${lengthFormat(accountNo)}${accountNo}0208QRIBFTTA5204513753037045802VN54${lengthFormat(amount)}${amount} 59${lengthFormat(message)}${message}6006Ha Noi8707CLASSIC6304`;
+    return qrString + crc16(qrString);
+  } catch (err) {
+    console.log(err.message);
   }
-
-  // Add consumer info
-  Object.assign(data, consumerInfo);
-
-  return serializeData(data);
 };
 
 /**
@@ -87,6 +76,7 @@ export const generateVietQRCode = async (bankBin, accountNo, accountName, amount
   try {
     const QRCode = (await import('qrcode')).default;
     const qrData = generateVietQRString(bankBin, accountNo, accountName, amount, message);
+    console.log('qrDataqrDataqrDataqrData', qrData);
     return await QRCode.toDataURL(qrData);
   } catch (err) {
     throw new Error('Failed to generate QR code: ' + err.message);
