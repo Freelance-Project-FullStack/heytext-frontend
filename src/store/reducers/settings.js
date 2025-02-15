@@ -2,9 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   payment: {
-    vnpay: {
-      tmnCode: 'YOUR_TMN_CODE',
-      hashSecret: 'YOUR_HASH_SECRET',
+    banking: {
+      bankName: 'Vietcombank',
+      accountNumber: '9866564502',
+      merchantCode: 43, //'970436',
+      accountName: 'PHAM QUANG THINH',
+      phoneNumber: '0866564502',
+      transferPrefix: 'PACKAGE_(userId)_',
       returnUrl: 'http://localhost:3000/payment/callback',
       amount: 990000,
       premiumPlanName: 'Premium - 1 năm'
@@ -19,9 +23,9 @@ const initialState = {
   emailSettings: {
     smtpHost: 'smtp.gmail.com',
     smtpPort: 587,
-    smtpUser: 'your-email@gmail.com',
+    smtpUser: 'phamquangquang2008@gmail.com',
     smtpPass: '********',
-    senderName: 'Font Store Admin'
+    senderName: 'Heytext Admin'
   }
 };
 

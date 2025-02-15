@@ -28,6 +28,7 @@ import {
   PlayCircleOutlined,
   ShoppingCartOutlined
 } from '@ant-design/icons';
+import PaymentQRCode from 'components/payment/PaymentQRCode';
 
 const COURSE_CATEGORIES = ['Typography Cơ bản', 'Thiết kế Logo', 'Branding', 'UI/UX Design', 'Font Design'];
 
@@ -222,9 +223,15 @@ const CourseList = () => {
                 <Typography variant="h5" color="primary">
                   {openCourse.price.toLocaleString()}đ
                 </Typography>
-                <Button variant="contained" size="large" startIcon={<ShoppingCartOutlined />} onClick={() => handlePurchase(openCourse)}>
-                  Mua khóa học
-                </Button>
+                <PaymentQRCode
+                  amount={openCourse.price}
+                  orderId={`cource_${openCourse.id}`}
+                  variant="contained"
+                  size="large"
+                  label="Mua khóa học"
+                  startIcon={<ShoppingCartOutlined />}
+                  onClick={() => handlePurchase(openCourse)}
+                />
               </Box>
             </DialogActions>
           </>
