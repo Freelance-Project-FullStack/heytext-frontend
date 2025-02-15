@@ -14,6 +14,9 @@ import {
   TextField,
   Chip,
   IconButton,
+  CircularProgress,
+  Snackbar,
+  Alert,
   InputAdornment
 } from '@mui/material';
 import { DeleteOutlined, EditOutlined, AppstoreAddOutlined } from '@ant-design/icons';
@@ -29,34 +32,51 @@ const CourseManagement = () => {
     tags: '',
     imageUrl: '',
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Mock data - thay thế bằng API call thực tế
+  const baseURL = import.meta.env.VITE_APP_URL;
+
+  // Fetch courses from API
   useEffect(() => {
-    const mockCourses = [
-      {
-        id: 1,
-        title: 'Khóa học Photoshop cơ bản',
-        description: 'Học Photoshop từ cơ bản đến nâng cao',
-        price: 299000,
-        tags: ['design', 'photoshop', 'beginner'],
-        imageUrl: '/images/course1.jpg',
-        createdAt: '2024-03-20',
-        purchases: 45
+    const fetchCourses = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${baseURL}/courses`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.status === 'success') {
+          console.log(data.result.data);
+          setCourses(data.result.data);
+        } else {
+          throw new Error(data.message || 'Không thể tải danh sách khóa học');
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải khóa học:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
-      // Thêm khóa học khác
-    ];
-    setCourses(mockCourses);
-  }, []);
+    };
+  
+    fetchCourses();
+  }, []); 
+  
 
+  // Open dialog for adding/editing a course
   const handleOpen = (course = null) => {
     if (course) {
       setCurrentCourse(course);
       setFormData({
-        title: course.title,
+        title: course.name,
         description: course.description,
-        price: course.price,
-        tags: course.tags.join(', '),
-        imageUrl: course.imageUrl
+        price: course.price.toString(),
+        tags: course.tags?.join(', ') || '',
+        imageUrl: course.image
       });
     } else {
       setCurrentCourse(null);
@@ -71,40 +91,110 @@ const CourseManagement = () => {
     setOpen(true);
   };
 
+  // Close dialog
   const handleClose = () => {
     setOpen(false);
     setCurrentCourse(null);
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const processedData = {
-      ...formData,
+      name: formData.title,
+      description: formData.description,
       price: Number(formData.price),
       tags: formData.tags.split(',').map(tag => tag.trim()),
+      image: formData.imageUrl
     };
 
-    if (currentCourse) {
-      // Update existing course
-      setCourses(courses.map(c =>
-        c.id === currentCourse.id ? { ...c, ...processedData } : c
-      ));
-    } else {
-      // Add new course
-      setCourses([...courses, {
-        id: courses.length + 1,
-        ...processedData,
-        createdAt: new Date().toISOString().split('T')[0],
-        purchases: 0
-      }]);
+    try {
+      let response;
+      if (currentCourse) {
+        // Update existing course
+        response = await fetch(`${baseURL}/courses/${currentCourse._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(processedData)
+        });
+      } else {
+        // Add new course
+        response = await fetch(`${baseURL}/courses`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(processedData)
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        setSnackbarMessage(currentCourse ? 'Course updated successfully!' : 'Course added successfully!');
+        setSnackbarOpen(true);
+        // Refresh course list
+        const fetchResponse = await fetch(`${baseURL}/courses`);
+        const fetchData = await fetchResponse.json();
+        // console.log(fetchData);
+        // setCourses(fetchData.result.data);
+        handleClose();
+      } else {
+        throw new Error(data.message || 'Failed to save course');
+      }
+    } catch (error) {
+      console.error('Error saving course:', error);
+      setSnackbarMessage(error.message);
+      setSnackbarOpen(true);
     }
-    handleClose();
   };
 
-  const handleDelete = (id) => {
-    setCourses(courses.filter(course => course.id !== id));
-    // Add API call to delete course
+  // Handle course deletion
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`${baseURL}/courses/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.status === 'success') {
+        setSnackbarMessage('Course deleted successfully!');
+        setSnackbarOpen(true);
+        setCourses(courses.filter(course => course._id !== id));
+      } else {
+        throw new Error(data.message || 'Failed to delete course');
+      }
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      setSnackbarMessage(error.message);
+      setSnackbarOpen(true);
+    }
   };
+
+  // Close snackbar
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 3 }}>
@@ -121,17 +211,17 @@ const CourseManagement = () => {
 
       <Grid container spacing={3}>
         {courses.map((course) => (
-          <Grid item xs={12} sm={6} md={4} key={course.id}>
+          <Grid item xs={12} sm={6} md={4} key={course._id}>
             <Card>
               <CardMedia
                 component="img"
                 height="140"
-                image={course.imageUrl}
-                alt={course.title}
+                image={course.image}
+                alt={course.name}
               />
               <CardContent>
                 <Typography gutterBottom variant="h6">
-                  {course.title}
+                  {course.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" noWrap>
                   {course.description}
@@ -140,7 +230,7 @@ const CourseManagement = () => {
                   {course.price.toLocaleString('vi-VN')}đ
                 </Typography>
                 <Box sx={{ mt: 1 }}>
-                  {course.tags.map((tag, index) => (
+                  {course.tags?.map((tag, index) => (
                     <Chip
                       key={index}
                       label={tag}
@@ -149,14 +239,11 @@ const CourseManagement = () => {
                     />
                   ))}
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Lượt mua: {course.purchases}
-                </Typography>
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
                   <IconButton onClick={() => handleOpen(course)}>
                     <EditOutlined />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(course.id)}>
+                  <IconButton onClick={() => handleDelete(course._id)}>
                     <DeleteOutlined />
                   </IconButton>
                 </Box>
@@ -223,8 +310,18 @@ const CourseManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
-export default CourseManagement; 
+export default CourseManagement;
