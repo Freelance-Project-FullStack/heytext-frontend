@@ -50,7 +50,7 @@ const CourseManagement = () => {
         }
         const data = await response.json();
         if (data.status === 'success') {
-          console.log(data.result.data);
+        //  console.log(data.result.data);
           setCourses(data.result.data);
         } else {
           throw new Error(data.message || 'Không thể tải danh sách khóa học');

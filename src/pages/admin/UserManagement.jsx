@@ -19,14 +19,23 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const baseURL = import.meta.env.VITE_APP_URL;
+
   // Mock data - thay thế bằng API call thực tế
   useEffect(() => {
-    const mockUsers = [
-      { id: 1, username: 'user1', email: 'user1@example.com', phone: '0123456789', role: 'user', isActive: true },
-      { id: 2, username: 'admin1', email: 'admin1@example.com', phone: '0987654321', role: 'admin', isActive: true }
-      // Thêm users mock khác
-    ];
-    setUsers(mockUsers);
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`${baseURL}/users`); // Thêm URL API cơ bản
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setUsers(data.result.data);
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách người dùng:', error);
+      }
+    };
+    fetchUsers();
   }, []);
 
   // Xử lý tìm kiếm
@@ -48,7 +57,7 @@ const UserManagement = () => {
 
   // Lọc users theo search term
   const filteredUsers = users.filter(
-    (user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -61,7 +70,6 @@ const UserManagement = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
               <TableCell>Ảnh</TableCell>
               <TableCell>Tên</TableCell>
               <TableCell>Email</TableCell>
@@ -73,9 +81,8 @@ const UserManagement = () => {
           <TableBody>
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
                 <TableCell>{user.avatar}</TableCell>
-                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>
@@ -100,3 +107,4 @@ const UserManagement = () => {
 };
 
 export default UserManagement;
+
