@@ -61,7 +61,6 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const handleToggle = () => {
