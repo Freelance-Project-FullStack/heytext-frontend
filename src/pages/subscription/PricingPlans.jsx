@@ -1,26 +1,7 @@
+import { BookOutlined, CheckOutlined, DownloadOutlined, FontColorsOutlined, RobotOutlined } from '@ant-design/icons';
+import { Box, Button, Card, CardContent, Chip, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { useState } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Chip,
-  Divider
-} from '@mui/material';
-import {
-  CheckOutlined,
-  CloseOutlined,
-  FontColorsOutlined,
-  RobotOutlined,
-  BookOutlined,
-  DownloadOutlined
-} from '@ant-design/icons';
+import PaymentQRCode from 'components/payment/PaymentQRCode';
 
 const PricingPlans = () => {
   const [billingPeriod, setBillingPeriod] = useState('monthly');
@@ -116,26 +97,14 @@ const PricingPlans = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Chọn gói phù hợp với bạn
       </Typography>
-      
+
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-        <Button
-          variant={billingPeriod === 'monthly' ? 'contained' : 'outlined'}
-          onClick={() => setBillingPeriod('monthly')}
-          sx={{ mr: 1 }}
-        >
+        <Button variant={billingPeriod === 'monthly' ? 'contained' : 'outlined'} onClick={() => setBillingPeriod('monthly')} sx={{ mr: 1 }}>
           Theo tháng
         </Button>
-        <Button
-          variant={billingPeriod === 'yearly' ? 'contained' : 'outlined'}
-          onClick={() => setBillingPeriod('yearly')}
-        >
+        <Button variant={billingPeriod === 'yearly' ? 'contained' : 'outlined'} onClick={() => setBillingPeriod('yearly')}>
           Theo năm
-          <Chip 
-            label="Tiết kiệm 20%" 
-            color="success" 
-            size="small" 
-            sx={{ ml: 1 }} 
-          />
+          <Chip label="Tiết kiệm 20%" color="success" size="small" sx={{ ml: 1 }} />
         </Button>
       </Box>
 
@@ -147,26 +116,24 @@ const PricingPlans = () => {
                 <Typography variant="h6" gutterBottom>
                   {plan.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="h6" color="text.secondary">
                   {billingPeriod === 'monthly' ? `$${plan.price.monthly}/tháng` : `$${plan.price.yearly}/năm`}
                 </Typography>
                 <List>
                   {plan.features.map((feature, i) => (
                     <ListItem key={i}>
-                      <ListItemIcon>
-                        {feature.icon}
-                      </ListItemIcon>
+                      <ListItemIcon>{feature.icon}</ListItemIcon>
                       <ListItemText primary={feature.text} />
                     </ListItem>
                   ))}
                 </List>
-                <Button
+                <PaymentQRCode
+                  amount={billingPeriod === 'monthly' ? plan.price.monthly : plan.price.yearly}
+                  orderId={plan.name}
+                  label="Thanh toán"
                   variant={plan.buttonVariant}
                   fullWidth
-                  onClick={() => {}}
-                >
-                  {plan.buttonText}
-                </Button>
+                />
               </CardContent>
             </Card>
           </Grid>
@@ -176,4 +143,4 @@ const PricingPlans = () => {
   );
 };
 
-export default PricingPlans; 
+export default PricingPlans;
