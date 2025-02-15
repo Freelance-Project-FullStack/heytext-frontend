@@ -3,10 +3,12 @@ import { CardMedia, Box, Button, Dialog, DialogActions, DialogContent, DialogTit
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { generateVietQRCode } from 'utils/qrCode';
+import axios from 'axios';
 
 // eslint-disable-next-line react/prop-types
 const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
   const settings = useSelector((state) => state.settings);
+  const { user } = useSelector((state) => state.auth);
   const [qrContent, setQrContent] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState('');
@@ -25,11 +27,11 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
       const generateQR = async () => {
         try {
           const qrImage = await generateVietQRCode(
-            '970403', // Bank BIN
-            '1234567890', // Account number
-            'NGUYEN VAN A', // Account name
-            '50000', // Amount (optional)
-            'Thanh toan' // Message (optional)
+            banking.merchantCode || '970403', // Bank BIN
+            banking.accountNumber, // Account number
+            banking.accountName, // Account name
+            amount, // Amount (optional)
+            banking.transferPrefix.replace('(userId)', user?.id) + orderId // Message (optional)
           );
           setQrContent(qrImage);
         } catch (error) {
@@ -42,14 +44,21 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
       setError(err.message);
       console.error('QR Code generation error:', err);
     }
-  }, [settings, amount, orderId]);
+  }, [settings, amount, orderId, user]);
 
   const handleCheckoutClick = () => {
     if (!error) {
       setOpenDialog(true);
     }
   };
-  const handleCheckout = () => {};
+  const handleCheckout = async () => {
+    try {
+      const res = await axios.post(import.meta.env.VITE_API_URL + '/checkout', payload);
+      console.log('handleCheckout/', res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -108,8 +117,7 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
                   }).format(amount)}
                 </Typography>
                 <Typography gutterBottom maxWidth="sm">
-                  <strong>Nội dung CK:</strong> {settings.payment.banking.transferPrefix}
-                  {orderId}
+                  <strong>Nội dung CK:</strong> {settings.payment.banking.transferPrefix.replace('(userId)', user?.id) + orderId}
                 </Typography>
               </Box>
               <Button variant="contained" color="primary" onClick={handleCheckout}>

@@ -135,8 +135,8 @@ export const checkAuthStatus = () => async (dispatch) => {
 
   try {
     // Gọi API để verify token và lấy thông tin user
-    // const response = await axios.get(`${API_URL}/users/me`);
-    // dispatch(loginSuccess({ token, user: response.data }));
+    const response = await axios.get(`${API_URL}/users/me`);
+    dispatch(loginSuccess({ token, user: response.data }));
   } catch (error) {
     // Nếu token không hợp lệ, logout
     dispatch(logoutSuccess());
