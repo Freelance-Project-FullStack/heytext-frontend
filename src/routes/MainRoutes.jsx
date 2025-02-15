@@ -7,6 +7,7 @@ import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
 import PrivateRoute from 'components/PrivateRoute';
 import AdminLayout from 'layout/AdminLayout';
+import TransactionHistory from 'pages/admin/TransactionHistory';
 
 // const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
@@ -53,6 +54,10 @@ const MainRoutes = {
           element: <DashboardDefault />
         }
       ]
+    },
+    {
+      path: '/admin/transactions',
+      element: <TransactionHistory />
     },
     {
       path: 'subscription',

@@ -1,12 +1,20 @@
 // assets
-import { DashboardOutlined, UserOutlined, CodeSandboxOutlined, FontColorsOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+  SnippetsOutlined,
+  DashboardOutlined,
+  UserOutlined,
+  CodeSandboxOutlined,
+  FontColorsOutlined,
+  SettingOutlined
+} from '@ant-design/icons';
 // icons
 const icons = {
   DashboardOutlined,
   UserOutlined,
   CodeSandboxOutlined,
   FontColorsOutlined,
-  SettingOutlined
+  SettingOutlined,
+  SnippetsOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -54,6 +62,14 @@ const dashboard = {
       type: 'item',
       url: '/admin/settings',
       icon: icons.SettingOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'admin-transactions',
+      url: '/admin/transactions',
+      type: 'item',
+      title: 'Lịch sử giao dịch',
+      icon: icons.SnippetsOutlined,
       breadcrumbs: false
     }
   ]
