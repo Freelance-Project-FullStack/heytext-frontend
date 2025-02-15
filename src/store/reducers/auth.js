@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { fetchUserProfile } from './profile';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -14,7 +15,7 @@ const checkAuthToken = () => {
 };
 
 const initialState = {
-  isAuthenticated: checkAuthToken(), // Kiểm tra token khi khởi tạo
+  isAuthenticated: checkAuthToken(),
   user: null,
   error: null,
   loading: false,
@@ -30,6 +31,7 @@ const authSlice = createSlice({
       state.loading = action.payload;
     },
     loginSuccess: (state, action) => {
+      console.log('---- auth: state, action', state, action);
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
@@ -75,12 +77,10 @@ export const getRedirectPath = (role) => {
   switch (role) {
     case 'admin':
       return '/admin/dashboard';
-    case 'premium':
-      return '/fonts/premium';
     case 'user':
       return '/fonts';
     default:
-      return '/fonts';
+      return '/';
   }
 };
 
@@ -88,12 +88,14 @@ export const login = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(`${API_URL}/users/login`, credentials);
+    console.log('response.data', response.data);
     const { token, user } = response.data;
 
     // Set token in axios headers
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
     dispatch(loginSuccess({ token, user }));
+    dispatch(fetchUserProfile());
     return { user, redirectPath: getRedirectPath(user.role) };
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Đăng nhập thất bại'));
@@ -134,8 +136,8 @@ export const checkAuthStatus = () => async (dispatch) => {
 
   try {
     // Gọi API để verify token và lấy thông tin user
-    const response = await axios.get(`${API_URL}/users/me`);
-    dispatch(loginSuccess({ token, user: response.data }));
+    // const response = await axios.get(`${API_URL}/users/me`);
+    // dispatch(loginSuccess({ token, user: response.data }));
   } catch (error) {
     // Nếu token không hợp lệ, logout
     dispatch(logoutSuccess());

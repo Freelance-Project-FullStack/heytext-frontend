@@ -1,6 +1,7 @@
 // material-ui
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useSelector } from 'react-redux';
 
 // project import
 import NavGroup from './NavGroup';
@@ -9,7 +10,13 @@ import menuItem from 'menu-items';
 // ==============================|| DRAWER CONTENT - NAVIGATION ||============================== //
 
 export default function Navigation() {
-  const navGroups = menuItem.items.map((item) => {
+  const { role } = useSelector((state) => state.auth);
+
+  const filteredItems = menuItem.items.filter((item) => {
+    return !item.requireRoles || item.requireRoles.includes(role);
+  });
+
+  const navGroups = filteredItems.map((item) => {
     switch (item.type) {
       case 'group':
         return <NavGroup key={item.id} item={item} />;

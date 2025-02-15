@@ -1,11 +1,14 @@
 import { lazy } from 'react';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 // project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
 import PrivateRoute from 'components/PrivateRoute';
+import AdminLayout from 'layout/AdminLayout';
 
-const Color = Loadable(lazy(() => import('pages/component-overview/color')));
+// const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 
 // admin pages
@@ -20,25 +23,33 @@ const CourseList = Loadable(lazy(() => import('pages/courses/CourseList')));
 const Profile = Loadable(lazy(() => import('pages/profile/Profile')));
 const Settings = Loadable(lazy(() => import('pages/admin/Settings')));
 const AdminDashboard = Loadable(lazy(() => import('pages/dashboard')));
+
+// eslint-disable-next-line react/prop-types
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
+
+  if (!isAuthenticated || role !== 'admin') {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+};
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
   path: '/',
   element: <Dashboard />,
   children: [
+    // {
+    //   path: '/',
+    //   element: <DashboardDefault />
+    // },
     {
-      path: '/',
-      element: <DashboardDefault />
-    },
-    {
-      path: 'color',
-      element: <Color />
-    },
-    {
-      path: 'dashboard',
+      path: 'admin',
       children: [
         {
-          path: 'default',
+          path: 'dashboard',
           element: <DashboardDefault />
         }
       ]
@@ -53,48 +64,37 @@ const MainRoutes = {
     },
     {
       path: 'admin',
+      element: (
+        <AdminRoute>
+          <AdminLayout />
+        </AdminRoute>
+      ),
       children: [
         {
-          path: 'users',
-          element: (
-            <PrivateRoute allowedRoles={['admin']}>
-              <UserManagement />
-            </PrivateRoute>
-          )
+          path: 'dashboard',
+          element: <AdminDashboard />
         },
         {
-          path: 'fonts',
-          element: (
-            <PrivateRoute allowedRoles={['admin']}>
-              <FontManagement />
-            </PrivateRoute>
-          )
+          path: 'users',
+          element: <UserManagement />
         },
         {
           path: 'courses',
-          element: (
-            <PrivateRoute allowedRoles={['admin']}>
-              <CourseManagement />
-            </PrivateRoute>
-          )
+          element: <CourseManagement />
+        },
+        {
+          path: 'fonts',
+          element: <FontManagement />
         },
         {
           path: 'settings',
-          element: (
-            <PrivateRoute allowedRoles={['admin']}>
-              <Settings />
-            </PrivateRoute>
-          )
+          element: <Settings />
         }
       ]
     },
     {
       path: 'fonts',
-      element: (
-        <PrivateRoute allowedRoles={['admin', 'premium', 'user']}>
-          <FontSelector />
-        </PrivateRoute>
-      )
+      element: <FontSelector />
     },
     {
       path: 'chat',
@@ -106,6 +106,14 @@ const MainRoutes = {
     },
     {
       path: 'admin/dashboard',
+      element: (
+        <PrivateRoute allowedRoles={['admin']}>
+          <AdminDashboard />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: '/',
       element: (
         <PrivateRoute allowedRoles={['admin']}>
           <AdminDashboard />

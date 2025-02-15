@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // material-ui
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -24,6 +24,7 @@ const ProfileTab = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { user } = useSelector((state) => state.auth);
 
   const handleListItemClick = (event, index, path) => {
     setSelectedIndex(index);
@@ -36,6 +37,8 @@ const ProfileTab = () => {
     dispatch(logout());
     navigate('/login');
   };
+
+  if (!user) return null;
 
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
@@ -53,19 +56,24 @@ const ProfileTab = () => {
         <ListItemText primary="Xem hồ sơ" />
       </ListItemButton>
 
-      <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3, '/profile')}>
-        <ListItemIcon>
-          <ProfileOutlined />
-        </ListItemIcon>
-        <ListItemText primary="Mạng xã hội" />
-      </ListItemButton>
+      {/* Chỉ hiển thị các tùy chọn nâng cao cho người dùng đã xác thực */}
+      {user.role && (
+        <>
+          <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3, '/profile')}>
+            <ListItemIcon>
+              <ProfileOutlined />
+            </ListItemIcon>
+            <ListItemText primary="Mạng xã hội" />
+          </ListItemButton>
 
-      <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4, '/billing')}>
-        <ListItemIcon>
-          <WalletOutlined />
-        </ListItemIcon>
-        <ListItemText primary="Hóa đơn" />
-      </ListItemButton>
+          <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4, '/billing')}>
+            <ListItemIcon>
+              <WalletOutlined />
+            </ListItemIcon>
+            <ListItemText primary="Hóa đơn" />
+          </ListItemButton>
+        </>
+      )}
 
       <ListItemButton onClick={handleLogout}>
         <ListItemIcon>

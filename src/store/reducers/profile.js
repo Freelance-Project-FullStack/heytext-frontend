@@ -1,4 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5000/api';
 
 const initialState = {
   user: {
@@ -104,27 +107,88 @@ const initialState = {
       status: 'Thành công',
       transactionId: 'VNP456789123'
     }
-  ]
+  ],
+  loading: false,
+  error: null
 };
 
 const profileSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
-    updateProfile: (state, action) => {
-      state.user = {
-        ...state.user,
-        ...action.payload
-      };
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
-    logout: (state) => {
-      state.user = null;
-      state.fontDownloads = [];
-      state.courses = [];
-      state.payments = [];
+    setError: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
+    setProfileData: (state, action) => {
+      state.user = action.payload;
+    },
+    setFontDownloads: (state, action) => {
+      state.fontDownloads = action.payload;
+    },
+    setCourses: (state, action) => {
+      state.courses = action.payload;
+    },
+    setPayments: (state, action) => {
+      state.payments = action.payload;
     }
   }
 });
 
-export const { updateProfile, logout } = profileSlice.actions;
+export const { setLoading, setError, setProfileData, setFontDownloads, setCourses, setPayments } = profileSlice.actions;
+
+// Thunk actions
+export const fetchUserProfile = () => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.get(`${API_URL}/users/profile`);
+    dispatch(setProfileData(response.data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Failed to fetch profile'));
+  }
+};
+
+export const fetchFontDownloads = () => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.get(`${API_URL}/users/font-downloads`);
+    dispatch(setFontDownloads(response.data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Failed to fetch font downloads'));
+  }
+};
+
+export const fetchUserCourses = () => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.get(`${API_URL}/users/courses`);
+    dispatch(setCourses(response.data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Failed to fetch courses'));
+  }
+};
+
+export const fetchPaymentHistory = () => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.get(`${API_URL}/users/payments`);
+    dispatch(setPayments(response.data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Failed to fetch payment history'));
+  }
+};
+
+export const updateProfile = (profileData) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.put(`${API_URL}/users/profile`, profileData);
+    dispatch(setProfileData(response.data));
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Failed to update profile'));
+  }
+};
+
 export default profileSlice.reducer;

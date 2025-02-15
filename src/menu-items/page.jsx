@@ -1,12 +1,21 @@
 // assets
-import { LoginOutlined, ProfileOutlined, FontColorsOutlined, WechatWorkOutlined } from '@ant-design/icons';
+import {
+  LoginOutlined,
+  ProfileOutlined,
+  FontColorsOutlined,
+  WechatWorkOutlined,
+  BookOutlined,
+  CheckCircleOutlined
+} from '@ant-design/icons';
 
 // icons
 const icons = {
   LoginOutlined,
   ProfileOutlined,
   FontColorsOutlined,
-  WechatWorkOutlined
+  WechatWorkOutlined,
+  BookOutlined,
+  CheckCircleOutlined
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
@@ -38,7 +47,7 @@ const pages = {
       title: 'Khoá học',
       type: 'item',
       url: '/courses',
-      icon: icons.WechatWorkOutlined,
+      icon: icons.BookOutlined,
       breadcrumbs: false
     },
     {
@@ -46,7 +55,7 @@ const pages = {
       title: 'Subscription',
       type: 'item',
       url: '/subscription',
-      icon: icons.WechatWorkOutlined,
+      icon: icons.CheckCircleOutlined,
       breadcrumbs: false
     }
   ]

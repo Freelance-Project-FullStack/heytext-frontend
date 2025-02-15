@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -31,7 +31,6 @@ const AuthLogin = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const { loading } = useSelector((state) => state.auth);
 
   const handleClickShowPassword = () => {
@@ -50,7 +49,6 @@ const AuthLogin = () => {
           password: values.password
         })
       );
-
       const redirectPath = location.state?.from || result.redirectPath;
       navigate(redirectPath, { replace: true });
     } catch (err) {

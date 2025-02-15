@@ -22,8 +22,9 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { updateProfile, logout } from 'store/reducers/profile';
+import { useState, useEffect } from 'react';
+import { updateProfile, fetchFontDownloads, fetchUserCourses, fetchPaymentHistory } from 'store/reducers/profile';
+import { logout } from 'store/reducers/auth';
 import axios from 'axios';
 
 const Profile = () => {
@@ -86,6 +87,12 @@ const Profile = () => {
       </Box>
     </DialogContent>
   );
+
+  useEffect(() => {
+    dispatch(fetchFontDownloads());
+    dispatch(fetchUserCourses());
+    dispatch(fetchPaymentHistory());
+  }, [dispatch]);
 
   return (
     <Box sx={{ p: 3 }}>

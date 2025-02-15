@@ -10,6 +10,7 @@ import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 // project import
 import MainCard from 'components/MainCard';
 
+// eslint-disable-next-line react/prop-types
 export default function Breadcrumbs({ navigation, title, ...others }) {
   const location = useLocation();
   const [main, setMain] = useState();
@@ -33,6 +34,7 @@ export default function Breadcrumbs({ navigation, title, ...others }) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/prop-types
     navigation?.items?.map((menu) => {
       if (menu.type && menu.type === 'group') {
         getCollapse(menu);
@@ -43,7 +45,7 @@ export default function Breadcrumbs({ navigation, title, ...others }) {
 
   // only used for component demo breadcrumbs
   if (location.pathname === '/breadcrumbs') {
-    location.pathname = '/dashboard/analytics';
+    location.pathname = '/';
   }
 
   let mainContent;

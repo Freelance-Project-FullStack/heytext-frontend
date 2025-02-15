@@ -61,6 +61,8 @@ const UserManagement = () => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Ảnh</TableCell>
               <TableCell>Tên</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Số điện thoại</TableCell>
@@ -71,6 +73,8 @@ const UserManagement = () => {
           <TableBody>
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.avatar}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phone}</TableCell>
