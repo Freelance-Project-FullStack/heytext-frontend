@@ -52,7 +52,7 @@ function crc16(str) {
  */
 export const generateVietQRString = (bankBin, accountNo, accountName, amount = '', message = '', bankName) => {
   try {
-    let qrString;
+    let qrString = '';
     if (bankName == 'Vietcombank')
       qrString = `00020101021238540010A00000072701240006${bankBin}01${String(accountNo).length}${accountNo}0208QRIBFTTA530370454${lengthFormat(amount)}${amount}5802VN62${lengthFormat(`08${lengthFormat(message)}${message}`)}08${lengthFormat(message)}${message}6304`;
     if (bankName == 'TPBank')
@@ -72,10 +72,10 @@ export const generateVietQRString = (bankBin, accountNo, accountName, amount = '
  * @param {string} [message=""] - Optional payment message
  * @returns {Promise<string>} Base64 encoded QR code image
  */
-export const generateVietQRCode = async (bankBin, accountNo, accountName, amount = '', message = '') => {
+export const generateVietQRCode = async (bankBin, accountNo, accountName, amount = '', message = '', bankName) => {
   try {
     const QRCode = (await import('qrcode')).default;
-    const qrData = generateVietQRString(bankBin, accountNo, accountName, amount, message);
+    const qrData = generateVietQRString(bankBin, accountNo, accountName, amount, message, bankName);
     console.log('qrDataqrDataqrDataqrData', qrData);
     return await QRCode.toDataURL(qrData);
   } catch (err) {

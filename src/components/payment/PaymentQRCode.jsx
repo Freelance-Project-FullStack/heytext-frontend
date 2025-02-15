@@ -31,7 +31,8 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
             banking.accountNumber, // Account number
             banking.accountName, // Account name
             amount, // Amount (optional)
-            banking.transferPrefix.replace('(userId)', user?.id) + orderId // Message (optional)
+            banking.transferPrefix.replace('(userId)', user?.id) + orderId, // Message (optional)
+            banking.bankName
           );
           setQrContent(qrImage);
         } catch (error) {
