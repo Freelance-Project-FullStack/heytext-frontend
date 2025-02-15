@@ -3,12 +3,19 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   payment: {
     banking: {
-      bankName: 'Vietcombank',
-      accountNumber: '9866564502',
-      merchantCode: '970436',
+      // bankName: 'Vietcombank',
+      // accountNumber: '9866564502',
+      // merchantCode: '970436',
+      // accountName: 'PHAM QUANG THINH',
+      // phoneNumber: '0866564502',
+      // transferPrefix: 'PACKAGE_(userId)_',
+      bankName: 'TPBank',
+      accountNumber: '03408786901',
+      merchantCode: '970423',
       accountName: 'PHAM QUANG THINH',
       phoneNumber: '0866564502',
       transferPrefix: 'PACKAGE_(userId)_',
+
       returnUrl: 'http://localhost:3000/payment/callback',
       amount: 990000,
       premiumPlanName: 'Premium - 1 năm'

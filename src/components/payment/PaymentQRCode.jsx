@@ -90,7 +90,7 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
                   borderRadius: 1
                 }}
               >
-                <CardMedia component="img" height="260" width="200" image={qrContent} />
+                <CardMedia component="img" height="260" width="200" image={qrContent} style={{ objectFit: 'contain' }} />
                 {/* <QRCodeSVG value={qrContent} size={256} level="M" includeMargin={true} /> */}
               </Box>
             </Grid>

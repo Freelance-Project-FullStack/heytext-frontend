@@ -20,7 +20,7 @@ import {
   TextField
 } from '@mui/material';
 import { IssuesCloseOutlined, StopOutlined } from '@ant-design/icons';
-import { fetchTransactions, approveTransaction, rejectTransaction } from '../../services/transactionService';
+import { fetchTransactions, approveTransaction, rejectTransaction } from 'services/transactionService';
 const TransactionHistory = () => {
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(0);
