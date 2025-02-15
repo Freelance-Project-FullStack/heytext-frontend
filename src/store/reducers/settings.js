@@ -5,7 +5,7 @@ const initialState = {
     banking: {
       bankName: 'Vietcombank',
       accountNumber: '9866564502',
-      merchantCode: '970436',
+      merchantCode: 43, //'970436',
       accountName: 'PHAM QUANG THINH',
       phoneNumber: '0866564502',
       transferPrefix: 'PACKAGE_(userId)_',

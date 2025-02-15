@@ -1,37 +1,8 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from '@mui/material';
-import { QRCodeSVG } from 'qrcode.react'; // Changed this line
+import { CardMedia, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from '@mui/material';
+
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
-// CRC16 calculation function
-const crc16 = (str) => {
-  let crc = 0xffff;
-  const bytes = new TextEncoder().encode(str);
-
-  for (const byte of bytes) {
-    crc ^= byte;
-    for (let j = 0; j < 8; j++) {
-      if (crc & 0x0001) {
-        crc = (crc >> 1) ^ 0xa001;
-      } else {
-        crc >>= 1;
-      }
-    }
-  }
-  return crc.toString(16).toUpperCase().padStart(4, '0');
-};
-
-// Format string with proper length padding
-const formatField = (id, value, length = null) => {
-  const stringValue = value.toString();
-  const valueLength = stringValue.length;
-
-  // If length is specified, pad with zeros
-  const paddedValue = length ? stringValue.padStart(length, '0') : stringValue;
-
-  // Format: ID (2 digits) + Length (2 digits) + Value
-  return `${id}${valueLength.toString().padStart(2, '0')}${paddedValue}`;
-};
+import { generateVietQRCode } from 'utils/qrCode';
 
 // eslint-disable-next-line react/prop-types
 const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
@@ -43,7 +14,6 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
   useEffect(() => {
     try {
       const banking = settings.payment.banking;
-
       // Validate required fields
       if (!banking.merchantCode || !banking.accountNumber || !banking.accountName) {
         throw new Error('Missing required banking information');
@@ -52,31 +22,22 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
       if (amount < 0) {
         throw new Error('Invalid amount');
       }
-
-      // Build VietQR content following EMV QR Code Specification
-      const payload = [
-        '00', // Payload Format Indicator
-        '02', // Point of Initiation Method
-        '01', // Static QR Code
-
-        // Merchant Account Information
-        '38', // Consumer Presented Mode
-        formatField('00', 'A000000727'), // VietQR Application ID
-        formatField('01', banking.merchantCode), // Merchant ID
-        formatField('02', banking.accountNumber), // Account Number
-
-        formatField('58', 'VN'), // Country Code
-        formatField('59', banking.accountName), // Merchant Name
-        formatField('54', Number(amount || 0).toFixed(0)), // Transaction Amount
-        formatField('62', `${banking.transferPrefix}${orderId}`) // Additional Data Field
-      ].join('');
-
-      // Calculate and append CRC
-      const crc = crc16(payload + '6304');
-      const qrString = payload + '6304' + crc;
-
-      setQrContent(qrString);
-      setError('');
+      const generateQR = async () => {
+        try {
+          const qrImage = await generateVietQRCode(
+            '970403', // Bank BIN
+            '1234567890', // Account number
+            'NGUYEN VAN A', // Account name
+            '50000', // Amount (optional)
+            'Thanh toan' // Message (optional)
+          );
+          setQrContent(qrImage);
+        } catch (error) {
+          console.error('Error generating QR code:', error);
+          setError('');
+        }
+      };
+      generateQR();
     } catch (err) {
       setError(err.message);
       console.error('QR Code generation error:', err);
@@ -120,7 +81,8 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
                   borderRadius: 1
                 }}
               >
-                <QRCodeSVG value={qrContent} size={256} level="M" includeMargin={true} />
+                <CardMedia component="img" height="260" width="200" image={qrContent} />
+                {/* <QRCodeSVG value={qrContent} size={256} level="M" includeMargin={true} /> */}
               </Box>
             </Grid>
 
@@ -145,7 +107,7 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
                     currency: 'VND'
                   }).format(amount)}
                 </Typography>
-                <Typography gutterBottom>
+                <Typography gutterBottom maxWidth="sm">
                   <strong>Nội dung CK:</strong> {settings.payment.banking.transferPrefix}
                   {orderId}
                 </Typography>
