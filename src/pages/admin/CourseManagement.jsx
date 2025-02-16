@@ -20,6 +20,7 @@ import {
   InputAdornment
 } from '@mui/material';
 import { DeleteOutlined, EditOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import { set } from 'lodash';
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
@@ -36,6 +37,7 @@ const CourseManagement = () => {
   const [error, setError] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const baseURL = import.meta.env.VITE_APP_URL;
 
@@ -50,7 +52,7 @@ const CourseManagement = () => {
         }
         const data = await response.json();
         if (data.status === 'success') {
-        //  console.log(data.result.data);
+            console.log(data.result.data);
           setCourses(data.result.data);
         } else {
           throw new Error(data.message || 'Không thể tải danh sách khóa học');
@@ -62,10 +64,10 @@ const CourseManagement = () => {
         setLoading(false);
       }
     };
-  
+
     fetchCourses();
-  }, []); 
-  
+  }, []);
+
 
   // Open dialog for adding/editing a course
   const handleOpen = (course = null) => {
@@ -110,6 +112,7 @@ const CourseManagement = () => {
 
     try {
       let response;
+      let updatedCourse;
       if (currentCourse) {
         // Update existing course
         response = await fetch(`${baseURL}/courses/${currentCourse._id}`, {
@@ -117,6 +120,17 @@ const CourseManagement = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(processedData)
         });
+
+        updatedCourse = { ...currentCourse, ...processedData };
+        console.log(updatedCourse);
+        setSnackbarMessage('Course updated successfully!');
+        setSnackbarOpen(true);
+        setCourses((prevCourses) => {
+          return prevCourses.map(course => course._id === updatedCourse._id ? updatedCourse : course);
+        });
+
+        handleClose();
+
       } else {
         // Add new course
         response = await fetch(`${baseURL}/courses`, {
@@ -124,26 +138,23 @@ const CourseManagement = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(processedData)
         });
+
+        const newdata = await response.json();
+        setSnackbarMessage('Course added successfully!');
+        setSnackbarOpen(true);
+        updatedCourse = { ...processedData, _id: newdata.data.id };
+
+        setCourses((prevCourses) => {
+          return [...prevCourses, updatedCourse];
+        });
+
+        handleClose();
       }
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        setSnackbarMessage(currentCourse ? 'Course updated successfully!' : 'Course added successfully!');
-        setSnackbarOpen(true);
-        // Refresh course list
-        const fetchResponse = await fetch(`${baseURL}/courses`);
-        const fetchData = await fetchResponse.json();
-        // console.log(fetchData);
-        // setCourses(fetchData.result.data);
-        handleClose();
-      } else {
-        throw new Error(data.message || 'Failed to save course');
-      }
     } catch (error) {
       console.error('Error saving course:', error);
       setSnackbarMessage(error.message);
@@ -196,8 +207,19 @@ const CourseManagement = () => {
     );
   }
 
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filterCourses = courses.filter(
+    (course) => course.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Box sx={{ p: 3 }}>
+      <Box sx={{ mb: 3 }}>
+        <TextField fullWidth label="Tìm kiếm khóa học" variant="outlined" value={searchTerm} onChange={handleSearch} />
+      </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h5">Quản lý Khóa học</Typography>
         <Button
@@ -210,7 +232,7 @@ const CourseManagement = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {courses.map((course) => (
+        {filterCourses.map((course) => (
           <Grid item xs={12} sm={6} md={4} key={course._id}>
             <Card>
               <CardMedia
