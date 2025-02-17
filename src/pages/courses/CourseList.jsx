@@ -50,7 +50,6 @@ const CourseList = () => {
         }
         const data = await response.json();
         if (data.status === 'success') {
-          console.log(data.result.data);
           setCourses(data.result.data);
         } else {
           throw new Error(data.message || 'Không thể tải danh sách khóa học');
@@ -162,9 +161,8 @@ const CourseList = () => {
                   </Button>
                 </Box>
                 <Box sx={{ mt: 1 }}>
-                  {course.tags?.map((tag, index) => (
-                    <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
-                  ))}
+                  {course?.tags?.length &&
+                    course?.tags?.map((tag, index) => <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />)}
                 </Box>
               </CardContent>
             </Card>
@@ -188,14 +186,15 @@ const CourseList = () => {
                     Nội dung khóa học
                   </Typography>
                   <List>
-                    {openCourse.lessons.map((lesson, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <PlayCircleOutlined />
-                        </ListItemIcon>
-                        <ListItemText primary={lesson} />
-                      </ListItem>
-                    ))}
+                    {openCourse?.lessons?.length &&
+                      openCourse?.lessons.map((lesson, index) => (
+                        <ListItem key={index}>
+                          <ListItemIcon>
+                            <PlayCircleOutlined />
+                          </ListItemIcon>
+                          <ListItemText primary={lesson} />
+                        </ListItem>
+                      ))}
                   </List>
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -203,14 +202,15 @@ const CourseList = () => {
                     Bạn sẽ nhận được
                   </Typography>
                   <List>
-                    {openCourse.features.map((feature, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <CheckCircleOutlined style={{ color: 'success.main' }} />
-                        </ListItemIcon>
-                        <ListItemText primary={feature} />
-                      </ListItem>
-                    ))}
+                    {openCourse?.features?.length &&
+                      openCourse.features.map((feature, index) => (
+                        <ListItem key={index}>
+                          <ListItemIcon>
+                            <CheckCircleOutlined style={{ color: 'success.main' }} />
+                          </ListItemIcon>
+                          <ListItemText primary={feature} />
+                        </ListItem>
+                      ))}
                   </List>
                 </Grid>
               </Grid>

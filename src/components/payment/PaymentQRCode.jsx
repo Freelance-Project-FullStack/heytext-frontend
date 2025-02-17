@@ -54,7 +54,12 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
   };
   const handleCheckout = async () => {
     try {
-      const res = await axios.post(import.meta.env.VITE_API_URL + '/checkout', payload);
+      const res = await axios.post(import.meta.env.VITE_API_URL + '/checkout', {
+        soTien: amount,
+        nguoiDung: user?.name,
+        goiDangKy: `Mua khóa học: ${orderId}`,
+        courseId: orderId
+      });
       console.log('handleCheckout/', res.data);
     } catch (err) {
       console.log(err);
