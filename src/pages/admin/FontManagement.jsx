@@ -26,36 +26,13 @@ import {
   Stack
 } from '@mui/material';
 import { DeleteOutlined, EditOutlined, CloudUploadOutlined } from '@ant-design/icons';
+import { fontService } from '../../services/fontService';
 
-const FONT_CATEGORIES = [
-  'Sans Serif',
-  'Serif',
-  'Script',
-  'Display',
-  'Decorative',
-  'Monospace',
-  'Calligraphy',
-  'Handwritten'
-];
+const FONT_CATEGORIES = ['Sans Serif', 'Serif', 'Script', 'Display', 'Decorative', 'Monospace', 'Calligraphy', 'Handwritten'];
 
-const FONT_STYLES = [
-  'Regular',
-  'Bold',
-  'Italic',
-  'Light',
-  'Medium',
-  'Black'
-];
+const FONT_STYLES = ['Regular', 'Bold', 'Italic', 'Light', 'Medium', 'Black'];
 
-const FONT_USES = [
-  'Logo',
-  'Branding',
-  'Website',
-  'Print',
-  'Packaging',
-  'Social Media',
-  'Advertisement'
-];
+const FONT_USES = ['Logo', 'Branding', 'Website', 'Print', 'Packaging', 'Social Media', 'Advertisement'];
 
 const FontManagement = () => {
   const [fonts, setFonts] = useState([]);
@@ -79,32 +56,23 @@ const FontManagement = () => {
     tags: []
   });
 
-  // Mock data - replace with actual API call
   useEffect(() => {
-    const mockFonts = [
-      {
-        id: 1,
-        name: 'Arial Pro',
-        description: 'Modern sans-serif font family',
-        category: 'Sans Serif',
-        styles: ['Regular', 'Bold', 'Italic'],
-        uses: ['Website', 'Branding'],
-        price: 29.99,
-        downloads: 150,
-        views: 1200,
-        rating: 4.5,
-        isActive: true,
-        createdAt: '2024-03-20',
-        previewUrl: '/images/arial-preview.png',
-        tags: ['modern', 'clean', 'professional']
-      }
-    ];
-    setFonts(mockFonts);
+    loadFonts();
   }, []);
+
+  const loadFonts = async () => {
+    try {
+      const data = await fontService.getAllFonts();
+      setFonts(data);
+    } catch (error) {
+      console.error('Error loading fonts:', error);
+      // Add error handling/notification here
+    }
+  };
 
   const handleFileUpload = (event, type) => {
     const file = event.target.files[0];
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [type]: file
     }));
@@ -144,41 +112,43 @@ const FontManagement = () => {
     setCurrentFont(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (currentFont) {
-      // Update existing font
-      setFonts(fonts.map(f => 
-        f.id === currentFont.id ? { ...f, ...formData } : f
-      ));
-    } else {
-      // Add new font
-      setFonts([...fonts, {
-        id: fonts.length + 1,
-        ...formData,
-        downloads: 0,
-        views: 0,
-        rating: 0,
-        isActive: true,
-        createdAt: new Date().toISOString().split('T')[0]
-      }]);
+    try {
+      if (currentFont) {
+        await fontService.updateFont(currentFont._id, formData);
+      } else {
+        await fontService.createFont(formData);
+      }
+      loadFonts();
+      handleClose();
+    } catch (error) {
+      console.error('Error saving font:', error);
+      // Add error handling/notification here
     }
-    handleClose();
   };
 
-  const handleDelete = (id) => {
-    setFonts(fonts.filter(font => font.id !== id));
-    // Add API call to delete font
+  const handleDelete = async (id) => {
+    try {
+      await fontService.deleteFont(id);
+      loadFonts();
+    } catch (error) {
+      console.error('Error deleting font:', error);
+      // Add error handling/notification here
+    }
   };
 
-  const handleToggleActive = (id) => {
-    setFonts(fonts.map(font =>
-      font.id === id ? { ...font, isActive: !font.isActive } : font
-    ));
-    // Add API call to update status
+  const handleToggleActive = async (id) => {
+    try {
+      await fontService.toggleFontStatus(id);
+      loadFonts();
+    } catch (error) {
+      console.error('Error toggling font status:', error);
+      // Add error handling/notification here
+    }
   };
 
-  const filteredFonts = fonts.filter(font => {
+  const filteredFonts = fonts.filter((font) => {
     const matchesSearch = font.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !filters.category || font.category === filters.category;
     const matchesStyle = !filters.style || font.styles.includes(filters.style);
@@ -203,53 +173,41 @@ const FontManagement = () => {
           <Stack direction="row" spacing={2}>
             <FormControl sx={{ minWidth: 150 }}>
               <InputLabel>Danh mục</InputLabel>
-              <Select
-                value={filters.category}
-                label="Danh mục"
-                onChange={(e) => setFilters({...filters, category: e.target.value})}
-              >
+              <Select value={filters.category} label="Danh mục" onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
                 <MenuItem value="">Tất cả</MenuItem>
-                {FONT_CATEGORIES.map(cat => (
-                  <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                {FONT_CATEGORIES.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    {cat}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 150 }}>
               <InputLabel>Kiểu chữ</InputLabel>
-              <Select
-                value={filters.style}
-                label="Kiểu chữ"
-                onChange={(e) => setFilters({...filters, style: e.target.value})}
-              >
+              <Select value={filters.style} label="Kiểu chữ" onChange={(e) => setFilters({ ...filters, style: e.target.value })}>
                 <MenuItem value="">Tất cả</MenuItem>
-                {FONT_STYLES.map(style => (
-                  <MenuItem key={style} value={style}>{style}</MenuItem>
+                {FONT_STYLES.map((style) => (
+                  <MenuItem key={style} value={style}>
+                    {style}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 150 }}>
               <InputLabel>Mục đích sử dụng</InputLabel>
-              <Select
-                value={filters.usage}
-                label="Mục đích sử dụng"
-                onChange={(e) => setFilters({...filters, usage: e.target.value})}
-              >
+              <Select value={filters.usage} label="Mục đích sử dụng" onChange={(e) => setFilters({ ...filters, usage: e.target.value })}>
                 <MenuItem value="">Tất cả</MenuItem>
-                {FONT_USES.map(use => (
-                  <MenuItem key={use} value={use}>{use}</MenuItem>
+                {FONT_USES.map((use) => (
+                  <MenuItem key={use} value={use}>
+                    {use}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Stack>
         </Grid>
         <Grid item xs={12} md={2}>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<CloudUploadOutlined />}
-            onClick={() => handleOpen()}
-            sx={{ height: '100%' }}
-          >
+          <Button fullWidth variant="contained" startIcon={<CloudUploadOutlined />} onClick={() => handleOpen()} sx={{ height: '100%' }}>
             Thêm Font Mới
           </Button>
         </Grid>
@@ -276,11 +234,7 @@ const FontManagement = () => {
             {filteredFonts.map((font) => (
               <TableRow key={font.id}>
                 <TableCell>
-                  <img 
-                    src={font.previewUrl} 
-                    alt={font.name} 
-                    style={{ height: 40, width: 'auto' }} 
-                  />
+                  <img src={font.previewUrl} alt={font.name} style={{ height: 40, width: 'auto' }} />
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle2">{font.name}</Typography>
@@ -290,7 +244,7 @@ const FontManagement = () => {
                 </TableCell>
                 <TableCell>{font.category}</TableCell>
                 <TableCell>
-                  {font.styles.map(style => (
+                  {font.styles.map((style) => (
                     <Chip key={style} label={style} size="small" sx={{ m: 0.5 }} />
                   ))}
                 </TableCell>
@@ -299,10 +253,7 @@ const FontManagement = () => {
                 <TableCell>{font.views}</TableCell>
                 <TableCell>{font.rating}/5</TableCell>
                 <TableCell>
-                  <Switch
-                    checked={font.isActive}
-                    onChange={() => handleToggleActive(font.id)}
-                  />
+                  <Switch checked={font.isActive} onChange={() => handleToggleActive(font.id)} />
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={() => handleOpen(font)}>
@@ -320,9 +271,7 @@ const FontManagement = () => {
 
       {/* Add/Edit Font Dialog */}
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {currentFont ? 'Chỉnh sửa Font' : 'Thêm Font Mới'}
-        </DialogTitle>
+        <DialogTitle>{currentFont ? 'Chỉnh sửa Font' : 'Thêm Font Mới'}</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} md={6}>
@@ -330,7 +279,7 @@ const FontManagement = () => {
                 fullWidth
                 label="Tên Font"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -339,7 +288,7 @@ const FontManagement = () => {
                 label="Giá"
                 type="number"
                 value={formData.price}
-                onChange={(e) => setFormData({...formData, price: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -349,19 +298,17 @@ const FontManagement = () => {
                 rows={3}
                 label="Mô tả"
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Danh mục</InputLabel>
-                <Select
-                  value={formData.category}
-                  label="Danh mục"
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                >
-                  {FONT_CATEGORIES.map(cat => (
-                    <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                <Select value={formData.category} label="Danh mục" onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                  {FONT_CATEGORIES.map((cat) => (
+                    <MenuItem key={cat} value={cat}>
+                      {cat}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -373,7 +320,7 @@ const FontManagement = () => {
                   multiple
                   value={formData.styles}
                   label="Kiểu chữ"
-                  onChange={(e) => setFormData({...formData, styles: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, styles: e.target.value })}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((value) => (
@@ -382,44 +329,45 @@ const FontManagement = () => {
                     </Box>
                   )}
                 >
-                  {FONT_STYLES.map(style => (
-                    <MenuItem key={style} value={style}>{style}</MenuItem>
+                  {FONT_STYLES.map((style) => (
+                    <MenuItem key={style} value={style}>
+                      {style}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                startIcon={<CloudUploadOutlined />}
-              >
+              <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadOutlined />}>
                 Upload Font File
-                <input
-                  type="file"
-                  hidden
-                  accept=".ttf,.otf"
-                  onChange={(e) => handleFileUpload(e, 'fontFile')}
-                />
+                <input type="file" hidden accept=".ttf,.otf" onChange={(e) => handleFileUpload(e, 'fontFile')} />
               </Button>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                startIcon={<CloudUploadOutlined />}
-              >
+              <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadOutlined />}>
                 Upload Preview Image
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(e, 'previewImage')}
-                />
+                <input type="file" hidden accept="image/*" onChange={(e) => handleFileUpload(e, 'previewImage')} />
               </Button>
             </Grid>
+            {/* Font Preview Section */}
+            {formData.fontUrl && (
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+                  Font Preview
+                </Typography>
+                <Box
+                  sx={{
+                    p: 2,
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    fontFamily: currentFont?.name
+                  }}
+                >
+                  <Typography variant="h5">The quick brown fox jumps over the lazy dog</Typography>
+                  <Typography>ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 1234567890</Typography>
+                </Box>
+              </Grid>
+            )}
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -433,4 +381,4 @@ const FontManagement = () => {
   );
 };
 
-export default FontManagement; 
+export default FontManagement;

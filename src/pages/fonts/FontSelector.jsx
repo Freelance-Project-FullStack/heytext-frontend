@@ -21,43 +21,13 @@ import {
   Drawer,
   Divider
 } from '@mui/material';
-import { 
-  FileSearchOutlined, 
-  OrderedListOutlined, 
-  TableOutlined, 
-  DownloadOutlined,
-  FilterOutlined,
-  StarOutlined
-} from '@ant-design/icons';
+import { FileSearchOutlined, OrderedListOutlined, TableOutlined, DownloadOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
 
-const FONT_CATEGORIES = [
-  'Sans Serif',
-  'Serif',
-  'Script',
-  'Display',
-  'Decorative',
-  'Monospace',
-  'Calligraphy',
-  'Handwritten'
-];
+const FONT_CATEGORIES = ['Sans Serif', 'Serif', 'Script', 'Display', 'Decorative', 'Monospace', 'Calligraphy', 'Handwritten'];
 
-const FONT_STYLES = [
-  'Regular',
-  'Bold',
-  'Italic',
-  'Light',
-  'Medium',
-  'Black'
-];
+const FONT_STYLES = ['Regular', 'Bold', 'Italic', 'Light', 'Medium', 'Black'];
 
-const FONT_USES = [
-  'Logo',
-  'Branding',
-  'Website',
-  'Print',
-  'Packaging',
-  'Social Media'
-];
+const FONT_USES = ['Logo', 'Branding', 'Website', 'Print', 'Packaging', 'Social Media'];
 
 const FontSelector = () => {
   const [fonts, setFonts] = useState([]);
@@ -67,7 +37,7 @@ const FontSelector = () => {
   const [language, setLanguage] = useState('en');
   const [viewMode, setViewMode] = useState('grid');
   const [openFilters, setOpenFilters] = useState(false);
-  
+
   // Font style controls
   const [fontStyles, setFontStyles] = useState({
     weight: 400,
@@ -101,7 +71,7 @@ const FontSelector = () => {
         rating: 4.5,
         previewText: 'The quick brown fox jumps over the lazy dog',
         tags: ['modern', 'clean', 'professional']
-      },
+      }
       // ... more fonts
     ];
     setFonts(mockFonts);
@@ -127,20 +97,16 @@ const FontSelector = () => {
     setSampleText(texts[event.target.value]);
   };
 
-  const filteredFonts = fonts.filter(font => {
+  const filteredFonts = fonts.filter((font) => {
     const matchesSearch = font.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategories = filters.categories.length === 0 || 
-      filters.categories.some(cat => font.category === cat);
-    const matchesStyles = filters.styles.length === 0 || 
-      filters.styles.some(style => font.styles.includes(style));
-    const matchesUses = filters.uses.length === 0 || 
-      filters.uses.some(use => font.uses.includes(use));
+    const matchesCategories = filters.categories.length === 0 || filters.categories.some((cat) => font.category === cat);
+    const matchesStyles = filters.styles.length === 0 || filters.styles.some((style) => font.styles.includes(style));
+    const matchesUses = filters.uses.length === 0 || filters.uses.some((use) => font.uses.includes(use));
     const matchesDownloads = font.downloads >= filters.minDownloads;
     const matchesPrice = font.price <= filters.maxPrice;
     const matchesRating = font.rating >= filters.rating;
 
-    return matchesSearch && matchesCategories && matchesStyles && 
-           matchesUses && matchesDownloads && matchesPrice && matchesRating;
+    return matchesSearch && matchesCategories && matchesStyles && matchesUses && matchesDownloads && matchesPrice && matchesRating;
   });
 
   return (
@@ -165,14 +131,14 @@ const FontSelector = () => {
               </Select>
             </FormControl>
           </Box>
-          
+
           {/* Font Style Controls */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} sm={6} md={3}>
               <Typography gutterBottom>Font Weight</Typography>
               <Slider
                 value={fontStyles.weight}
-                onChange={(e, val) => setFontStyles({...fontStyles, weight: val})}
+                onChange={(e, val) => setFontStyles({ ...fontStyles, weight: val })}
                 min={100}
                 max={900}
                 step={100}
@@ -184,7 +150,7 @@ const FontSelector = () => {
               <Typography gutterBottom>Letter Spacing</Typography>
               <Slider
                 value={fontStyles.letterSpacing}
-                onChange={(e, val) => setFontStyles({...fontStyles, letterSpacing: val})}
+                onChange={(e, val) => setFontStyles({ ...fontStyles, letterSpacing: val })}
                 min={-5}
                 max={10}
                 valueLabelDisplay="auto"
@@ -194,7 +160,7 @@ const FontSelector = () => {
               <Typography gutterBottom>Line Height</Typography>
               <Slider
                 value={fontStyles.lineHeight}
-                onChange={(e, val) => setFontStyles({...fontStyles, lineHeight: val})}
+                onChange={(e, val) => setFontStyles({ ...fontStyles, lineHeight: val })}
                 min={1}
                 max={3}
                 step={0.1}
@@ -206,7 +172,7 @@ const FontSelector = () => {
               <Select
                 fullWidth
                 value={fontStyles.textTransform}
-                onChange={(e) => setFontStyles({...fontStyles, textTransform: e.target.value})}
+                onChange={(e) => setFontStyles({ ...fontStyles, textTransform: e.target.value })}
               >
                 <MenuItem value="none">Normal</MenuItem>
                 <MenuItem value="uppercase">UPPERCASE</MenuItem>
@@ -217,13 +183,7 @@ const FontSelector = () => {
           </Grid>
 
           <Typography gutterBottom>Font Size: {fontSize}px</Typography>
-          <Slider
-            value={fontSize}
-            onChange={handleFontSizeChange}
-            min={8}
-            max={72}
-            valueLabelDisplay="auto"
-          />
+          <Slider value={fontSize} onChange={handleFontSizeChange} min={8} max={72} valueLabelDisplay="auto" />
         </CardContent>
       </Card>
 
@@ -238,24 +198,16 @@ const FontSelector = () => {
               <InputAdornment position="start">
                 <FileSearchOutlined />
               </InputAdornment>
-            ),
+            )
           }}
           sx={{ flex: 1 }}
         />
-        
-        <Button
-          variant="outlined"
-          startIcon={<FilterOutlined />}
-          onClick={() => setOpenFilters(true)}
-        >
+
+        <Button variant="outlined" startIcon={<FilterOutlined />} onClick={() => setOpenFilters(true)}>
           Filters
         </Button>
-        
-        <ToggleButtonGroup
-          value={viewMode}
-          exclusive
-          onChange={handleViewModeChange}
-        >
+
+        <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewModeChange}>
           <ToggleButton value="list">
             <OrderedListOutlined />
           </ToggleButton>
@@ -269,34 +221,40 @@ const FontSelector = () => {
       {(filters.categories.length > 0 || filters.styles.length > 0 || filters.uses.length > 0) && (
         <Box sx={{ mb: 2 }}>
           <Stack direction="row" spacing={1} flexWrap="wrap">
-            {filters.categories.map(cat => (
-              <Chip 
-                key={cat} 
+            {filters.categories.map((cat) => (
+              <Chip
+                key={cat}
                 label={cat}
-                onDelete={() => setFilters({
-                  ...filters,
-                  categories: filters.categories.filter(c => c !== cat)
-                })}
+                onDelete={() =>
+                  setFilters({
+                    ...filters,
+                    categories: filters.categories.filter((c) => c !== cat)
+                  })
+                }
               />
             ))}
-            {filters.styles.map(style => (
-              <Chip 
-                key={style} 
+            {filters.styles.map((style) => (
+              <Chip
+                key={style}
                 label={style}
-                onDelete={() => setFilters({
-                  ...filters,
-                  styles: filters.styles.filter(s => s !== style)
-                })}
+                onDelete={() =>
+                  setFilters({
+                    ...filters,
+                    styles: filters.styles.filter((s) => s !== style)
+                  })
+                }
               />
             ))}
-            {filters.uses.map(use => (
-              <Chip 
-                key={use} 
+            {filters.uses.map((use) => (
+              <Chip
+                key={use}
                 label={use}
-                onDelete={() => setFilters({
-                  ...filters,
-                  uses: filters.uses.filter(u => u !== use)
-                })}
+                onDelete={() =>
+                  setFilters({
+                    ...filters,
+                    uses: filters.uses.filter((u) => u !== use)
+                  })
+                }
               />
             ))}
           </Stack>
@@ -313,22 +271,11 @@ const FontSelector = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="h6">{font.name}</Typography>
                     <Stack direction="row" spacing={1}>
-                      <Chip
-                        label={font.isPro ? 'PRO' : 'FREE'}
-                        color={font.isPro ? 'primary' : 'success'}
-                        size="small"
-                      />
-                      {font.rating && (
-                        <Chip
-                          icon={<StarOutlined />}
-                          label={font.rating}
-                          size="small"
-                          color="warning"
-                        />
-                      )}
+                      <Chip label={font.isPro ? 'PRO' : 'FREE'} color={font.isPro ? 'primary' : 'success'} size="small" />
+                      {font.rating && <Chip icon={<StarOutlined />} label={font.rating} size="small" color="warning" />}
                     </Stack>
                   </Box>
-                  
+
                   <Typography
                     sx={{
                       fontFamily: font.fontFamily,
@@ -344,13 +291,13 @@ const FontSelector = () => {
                   >
                     {sampleText}
                   </Typography>
-                  
+
                   <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                    {font.styles.map(style => (
+                    {font.styles.map((style) => (
                       <Chip key={style} label={style} size="small" variant="outlined" />
                     ))}
                   </Stack>
-                  
+
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                       <Typography variant="body2" color="text.secondary">
@@ -387,19 +334,8 @@ const FontSelector = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="h6">{font.name}</Typography>
                   <Stack direction="row" spacing={1}>
-                    <Chip
-                      label={font.isPro ? 'PRO' : 'FREE'}
-                      color={font.isPro ? 'primary' : 'success'}
-                      size="small"
-                    />
-                    {font.rating && (
-                      <Chip
-                        icon={<StarOutlined />}
-                        label={font.rating}
-                        size="small"
-                        color="warning"
-                      />
-                    )}
+                    <Chip label={font.isPro ? 'PRO' : 'FREE'} color={font.isPro ? 'primary' : 'success'} size="small" />
+                    {font.rating && <Chip icon={<StarOutlined />} label={font.rating} size="small" color="warning" />}
                   </Stack>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -416,7 +352,7 @@ const FontSelector = () => {
                   </IconButton>
                 </Box>
               </Box>
-              
+
               <Typography
                 sx={{
                   fontFamily: font.fontFamily,
@@ -434,7 +370,7 @@ const FontSelector = () => {
               </Typography>
 
               <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                {font.styles.map(style => (
+                {font.styles.map((style) => (
                   <Chip key={style} label={style} size="small" variant="outlined" />
                 ))}
               </Stack>
@@ -444,20 +380,18 @@ const FontSelector = () => {
       )}
 
       {/* Filters Drawer */}
-      <Drawer
-        anchor="right"
-        open={openFilters}
-        onClose={() => setOpenFilters(false)}
-      >
+      <Drawer anchor="right" open={openFilters} onClose={() => setOpenFilters(false)}>
         <Box sx={{ width: 300, p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Filters</Typography>
-          
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
+
           <Typography gutterBottom>Categories</Typography>
           <FormControl fullWidth sx={{ mb: 3 }}>
             <Select
               multiple
               value={filters.categories}
-              onChange={(e) => setFilters({...filters, categories: e.target.value})}
+              onChange={(e) => setFilters({ ...filters, categories: e.target.value })}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((value) => (
@@ -466,7 +400,7 @@ const FontSelector = () => {
                 </Box>
               )}
             >
-              {FONT_CATEGORIES.map(category => (
+              {FONT_CATEGORIES.map((category) => (
                 <MenuItem key={category} value={category}>
                   {category}
                 </MenuItem>
@@ -479,7 +413,7 @@ const FontSelector = () => {
             <Select
               multiple
               value={filters.styles}
-              onChange={(e) => setFilters({...filters, styles: e.target.value})}
+              onChange={(e) => setFilters({ ...filters, styles: e.target.value })}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((value) => (
@@ -488,7 +422,7 @@ const FontSelector = () => {
                 </Box>
               )}
             >
-              {FONT_STYLES.map(style => (
+              {FONT_STYLES.map((style) => (
                 <MenuItem key={style} value={style}>
                   {style}
                 </MenuItem>
@@ -501,7 +435,7 @@ const FontSelector = () => {
             <Select
               multiple
               value={filters.uses}
-              onChange={(e) => setFilters({...filters, uses: e.target.value})}
+              onChange={(e) => setFilters({ ...filters, uses: e.target.value })}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((value) => (
@@ -510,7 +444,7 @@ const FontSelector = () => {
                 </Box>
               )}
             >
-              {FONT_USES.map(use => (
+              {FONT_USES.map((use) => (
                 <MenuItem key={use} value={use}>
                   {use}
                 </MenuItem>
@@ -523,7 +457,7 @@ const FontSelector = () => {
           <Typography gutterBottom>Minimum Downloads</Typography>
           <Slider
             value={filters.minDownloads}
-            onChange={(e, val) => setFilters({...filters, minDownloads: val})}
+            onChange={(e, val) => setFilters({ ...filters, minDownloads: val })}
             min={0}
             max={10000}
             step={100}
@@ -534,7 +468,7 @@ const FontSelector = () => {
           <Typography gutterBottom>Maximum Price</Typography>
           <Slider
             value={filters.maxPrice}
-            onChange={(e, val) => setFilters({...filters, maxPrice: val})}
+            onChange={(e, val) => setFilters({ ...filters, maxPrice: val })}
             min={0}
             max={1000}
             step={10}
@@ -545,7 +479,7 @@ const FontSelector = () => {
           <Typography gutterBottom>Minimum Rating</Typography>
           <Slider
             value={filters.rating}
-            onChange={(e, val) => setFilters({...filters, rating: val})}
+            onChange={(e, val) => setFilters({ ...filters, rating: val })}
             min={0}
             max={5}
             step={0.5}
@@ -559,4 +493,4 @@ const FontSelector = () => {
   );
 };
 
-export default FontSelector; 
+export default FontSelector;

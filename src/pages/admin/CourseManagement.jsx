@@ -30,7 +30,7 @@ const CourseManagement = () => {
     description: '',
     price: '',
     tags: '',
-    imageUrl: '',
+    imageUrl: ''
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,20 +38,17 @@ const CourseManagement = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const baseURL = import.meta.env.VITE_APP_URL;
-
   // Fetch courses from API
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${baseURL}/courses`);
+        const response = await fetch(`${import.meta.env.VITE_APP_URL}/courses`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
         if (data.status === 'success') {
-            console.log(data.result.data);
           setCourses(data.result.data);
         } else {
           throw new Error(data.message || 'Không thể tải danh sách khóa học');
@@ -66,7 +63,6 @@ const CourseManagement = () => {
 
     fetchCourses();
   }, []);
-
 
   // Open dialog for adding/editing a course
   const handleOpen = (course = null) => {
@@ -105,7 +101,7 @@ const CourseManagement = () => {
       name: formData.title,
       description: formData.description,
       price: Number(formData.price),
-      tags: formData.tags.split(',').map(tag => tag.trim()),
+      tags: formData.tags.split(',').map((tag) => tag.trim()),
       image: formData.imageUrl
     };
 
@@ -114,7 +110,7 @@ const CourseManagement = () => {
       let updatedCourse;
       if (currentCourse) {
         // Update existing course
-        response = await fetch(`${baseURL}/courses/${currentCourse._id}`, {
+        response = await fetch(`${import.meta.env.VITE_APP_URL}/courses/${currentCourse._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(processedData)
@@ -125,14 +121,13 @@ const CourseManagement = () => {
         setSnackbarMessage('Course updated successfully!');
         setSnackbarOpen(true);
         setCourses((prevCourses) => {
-          return prevCourses.map(course => course._id === updatedCourse._id ? updatedCourse : course);
+          return prevCourses.map((course) => (course._id === updatedCourse._id ? updatedCourse : course));
         });
 
         handleClose();
-
       } else {
         // Add new course
-        response = await fetch(`${baseURL}/courses`, {
+        response = await fetch(`${import.meta.env.VITE_APP_URL}/courses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(processedData)
@@ -153,7 +148,6 @@ const CourseManagement = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
     } catch (error) {
       console.error('Error saving course:', error);
       setSnackbarMessage(error.message);
@@ -164,7 +158,7 @@ const CourseManagement = () => {
   // Handle course deletion
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`${baseURL}/courses/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_URL}/courses/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) {
@@ -174,7 +168,7 @@ const CourseManagement = () => {
       if (data.status === 'success') {
         setSnackbarMessage('Course deleted successfully!');
         setSnackbarOpen(true);
-        setCourses(courses.filter(course => course._id !== id));
+        setCourses(courses.filter((course) => course._id !== id));
       } else {
         throw new Error(data.message || 'Failed to delete course');
       }
@@ -210,9 +204,7 @@ const CourseManagement = () => {
     setSearchTerm(event.target.value);
   };
 
-  const filterCourses = courses.filter(
-    (course) => course.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filterCourses = courses.filter((course) => course.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <Box sx={{ p: 3 }}>
@@ -221,11 +213,7 @@ const CourseManagement = () => {
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h5">Quản lý Khóa học</Typography>
-        <Button
-          variant="contained"
-          startIcon={<AppstoreAddOutlined />}
-          onClick={() => handleOpen()}
-        >
+        <Button variant="contained" startIcon={<AppstoreAddOutlined />} onClick={() => handleOpen()}>
           Thêm Khóa học
         </Button>
       </Box>
@@ -234,12 +222,7 @@ const CourseManagement = () => {
         {filterCourses.map((course) => (
           <Grid item xs={12} sm={6} md={4} key={course._id}>
             <Card>
-              <CardMedia
-                component="img"
-                height="140"
-                image={course.image}
-                alt={course.name}
-              />
+              <CardMedia component="img" height="140" image={course.image} alt={course.name} />
               <CardContent>
                 <Typography gutterBottom variant="h6">
                   {course.name}
@@ -252,12 +235,7 @@ const CourseManagement = () => {
                 </Typography>
                 <Box sx={{ mt: 1 }}>
                   {course.tags?.map((tag, index) => (
-                    <Chip
-                      key={index}
-                      label={tag}
-                      size="small"
-                      sx={{ mr: 0.5, mb: 0.5 }}
-                    />
+                    <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
                   ))}
                 </Box>
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -275,9 +253,7 @@ const CourseManagement = () => {
       </Grid>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {currentCourse ? 'Chỉnh sửa Khóa học' : 'Thêm Khóa học Mới'}
-        </DialogTitle>
+        <DialogTitle>{currentCourse ? 'Chỉnh sửa Khóa học' : 'Thêm Khóa học Mới'}</DialogTitle>
         <DialogContent>
           <Box component="form" sx={{ pt: 2 }}>
             <TextField
@@ -302,7 +278,7 @@ const CourseManagement = () => {
               margin="normal"
               type="number"
               InputProps={{
-                startAdornment: <InputAdornment position="start">VND</InputAdornment>,
+                startAdornment: <InputAdornment position="start">VND</InputAdornment>
               }}
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -332,11 +308,7 @@ const CourseManagement = () => {
         </DialogActions>
       </Dialog>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
         <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
