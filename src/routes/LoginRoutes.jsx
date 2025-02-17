@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MinimalLayout from 'layout/MinimalLayout';
+import Callback from 'pages/authentication/auth-forms/Callback';
 
 // render - login
 const AuthLogin = Loadable(lazy(() => import('pages/authentication/login')));
@@ -21,6 +22,10 @@ const LoginRoutes = {
     {
       path: '/register',
       element: <AuthRegister />
+    },
+    {
+      path: '/callback',
+      element: <Callback />
     }
   ]
 };
