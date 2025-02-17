@@ -64,7 +64,9 @@ const Chatbot = () => {
   const [openSettings, setOpenSettings] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const messagesEndRef = useRef(null);
-  const [isPremium] = useState(false); // Get from auth context
+  const [isPremium] = useState(true); // Get from auth context
+
+  const baseURL = import.meta.env.VITE_APP_URL;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -74,7 +76,29 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
+  const callApi = async (input) => {
+    try {
+      const response = await fetch(`${baseURL}/chatbot/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: input })
+      });
+
+    
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data.response; 
+    } catch (error) {
+      console.error('Error calling API:', error);
+      return "Xin lỗi, đã có lỗi xảy ra khi kết nối với API.";
+    }
+  };
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     if (!isPremium) {
@@ -89,22 +113,22 @@ const Chatbot = () => {
       return;
     }
 
-    setMessages([
-      ...messages,
-      { text: input, sender: 'user', timestamp: new Date() }
-    ]);
+    // Thêm tin nhắn của người dùng vào state
+    const userMessage = { text: input, sender: 'user', timestamp: new Date() };
+    setMessages([...messages, userMessage]);
 
-    // Mock bot response
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          text: "This is a mock response. Please configure API key for real responses.",
-          sender: 'bot',
-          timestamp: new Date()
-        }
-      ]);
-    }, 1000);
+    // Gọi API và nhận câu trả lời
+    const botResponse = await callApi(input);
+
+    // Thêm câu trả lời từ bot vào state
+    setMessages(prev => [
+      ...prev,
+      {
+        text: botResponse,
+        sender: 'bot',
+        timestamp: new Date()
+      }
+    ]);
 
     setInput('');
   };
@@ -227,4 +251,5 @@ const Chatbot = () => {
   );
 };
 
-export default Chatbot; 
+export default Chatbot;
+ 
