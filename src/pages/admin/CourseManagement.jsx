@@ -20,7 +20,6 @@ import {
   InputAdornment
 } from '@mui/material';
 import { DeleteOutlined, EditOutlined, AppstoreAddOutlined } from '@ant-design/icons';
-import { set } from 'lodash';
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);

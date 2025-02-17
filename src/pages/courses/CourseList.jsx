@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -30,44 +30,48 @@ import {
 } from '@ant-design/icons';
 import PaymentQRCode from 'components/payment/PaymentQRCode';
 
-const COURSE_CATEGORIES = ['Typography Cơ bản', 'Thiết kế Logo', 'Branding', 'UI/UX Design', 'Font Design'];
-
 const CourseList = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [openCourse, setOpenCourse] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const courses = [
-    {
-      id: 1,
-      title: 'Typography Masterclass',
-      description: 'Khóa học toàn diện về Typography từ cơ bản đến nâng cao',
-      thumbnail: '/images/course-1.jpg',
-      price: 1990000,
-      rating: 4.8,
-      students: 1250,
-      duration: '20 giờ',
-      category: 'Typography Cơ bản',
-      instructor: 'John Designer',
-      lessons: ['Giới thiệu về Typography', 'Các nguyên tắc cơ bản', 'Phân loại font chữ', 'Kỹ thuật phối font', 'Thực hành thiết kế'],
-      features: ['Truy cập trọn đời', 'Chứng chỉ hoàn thành', 'Bài tập thực hành', 'Hỗ trợ 1-1', 'File thiết kế mẫu']
-    }
-    // Thêm các khóa học khác
-  ];
+  const baseURL = import.meta.env.VITE_APP_URL;
+
+  useEffect(() => {
+      const fetchCourses = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(`${baseURL}/courses`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          if (data.status === 'success') {
+              console.log(data.result.data);
+            setCourses(data.result.data);
+          } else {
+            throw new Error(data.message || 'Không thể tải danh sách khóa học');
+          }
+        } catch (error) {
+          console.error('Lỗi khi tải khóa học:', error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchCourses();
+    }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category === selectedCategory ? 'all' : category);
-  };
-
-  const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+ 
+  const filterCourses = courses.filter(
+    (course) => course.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handlePurchase = async (course) => {
     try {
@@ -98,75 +102,40 @@ const CourseList = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Search and Filters */}
-      <Box sx={{ mb: 4 }}>
-        <TextField
-          fullWidth
-          placeholder="Tìm kiếm khóa học..."
-          value={searchTerm}
-          onChange={handleSearch}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchOutlined />
-              </InputAdornment>
-            )
-          }}
-          sx={{ mb: 2 }}
-        />
-
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {COURSE_CATEGORIES.map((category) => (
-            <Chip
-              key={category}
-              label={category}
-              onClick={() => handleCategoryClick(category)}
-              color={selectedCategory === category ? 'primary' : 'default'}
-              clickable
-            />
-          ))}
-        </Box>
+      <Box sx={{ mb: 3 }}>
+        <TextField fullWidth label="Tìm kiếm khóa học" variant="outlined" value={searchTerm} onChange={handleSearch} />
       </Box>
 
-      {/* Course Grid */}
+
       <Grid container spacing={3}>
-        {filteredCourses.map((course) => (
-          <Grid item xs={12} sm={6} md={4} key={course.id}>
+        {filterCourses.map((course) => (
+          <Grid item xs={12} sm={6} md={4} key={course._id}>
             <Card>
-              <CardMedia component="img" height="200" image={course.thumbnail} alt={course.title} />
+              <CardMedia
+                component="img"
+                height="140"
+                image={course.image}
+                alt={course.name}
+              />
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {course.title}
+                <Typography gutterBottom variant="h6">
+                  {course.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography variant="body2" color="text.secondary" noWrap>
                   {course.description}
                 </Typography>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Rating value={course.rating} precision={0.1} readOnly size="small" />
-                  <Typography variant="body2" sx={{ ml: 1 }}>
-                    ({course.rating})
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                    <UserOutlined style={{ marginRight: 4 }} />
-                    {course.students} học viên
-                  </Typography>
-                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                    <ClockCircleOutlined style={{ marginRight: 4 }} />
-                    {course.duration}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="h6" color="primary">
-                    {course.price.toLocaleString()}đ
-                  </Typography>
-                  <Button variant="contained" startIcon={<ShoppingCartOutlined />} onClick={() => setOpenCourse(course)}>
-                    Chi tiết
-                  </Button>
+                <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
+                  {course.price.toLocaleString('vi-VN')}đ
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                  {course.tags?.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      size="small"
+                      sx={{ mr: 0.5, mb: 0.5 }}
+                    />
+                  ))}
                 </Box>
               </CardContent>
             </Card>
@@ -174,69 +143,6 @@ const CourseList = () => {
         ))}
       </Grid>
 
-      {/* Course Detail Dialog */}
-      <Dialog open={!!openCourse} onClose={() => setOpenCourse(null)} maxWidth="md" fullWidth>
-        {openCourse && (
-          <>
-            <DialogTitle>
-              <Typography variant="h5">{openCourse.title}</Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                Giảng viên: {openCourse.instructor}
-              </Typography>
-            </DialogTitle>
-            <DialogContent dividers>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={8}>
-                  <Typography variant="h6" gutterBottom>
-                    Nội dung khóa học
-                  </Typography>
-                  <List>
-                    {openCourse.lessons.map((lesson, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <PlayCircleOutlined />
-                        </ListItemIcon>
-                        <ListItemText primary={lesson} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Typography variant="h6" gutterBottom>
-                    Bạn sẽ nhận được
-                  </Typography>
-                  <List>
-                    {openCourse.features.map((feature, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <CheckCircleOutlined style={{ color: 'success.main' }} />
-                        </ListItemIcon>
-                        <ListItemText primary={feature} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                <Typography variant="h5" color="primary">
-                  {openCourse.price.toLocaleString()}đ
-                </Typography>
-                <PaymentQRCode
-                  amount={openCourse.price}
-                  orderId={`cource_${openCourse.id}`}
-                  variant="contained"
-                  size="large"
-                  label="Mua khóa học"
-                  startIcon={<ShoppingCartOutlined />}
-                  onClick={() => handlePurchase(openCourse)}
-                />
-              </Box>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
     </Box>
   );
 };
