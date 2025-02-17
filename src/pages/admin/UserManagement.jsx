@@ -19,13 +19,11 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const baseURL = import.meta.env.VITE_APP_URL;
-
   // Fetch users from the backend
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${baseURL}/users`);
+        const response = await fetch(`${import.meta.env.VITE_APP_URL}/users`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -45,12 +43,12 @@ const UserManagement = () => {
 
   const updateUser = async (userId, updates) => {
     try {
-      const response = await fetch(`${baseURL}/users/${userId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_URL}/users/${userId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(updates)
       });
 
       if (!response.ok) {
@@ -63,7 +61,6 @@ const UserManagement = () => {
       console.error('Lỗi khi cập nhật người dùng:', error);
     }
   };
-
 
   const handleToggleActive = (userId, status) => {
     updateUser(userId, { status: !status });
@@ -93,7 +90,6 @@ const UserManagement = () => {
               <TableCell>Vai trò</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell>Thời gian tạo</TableCell>
-
             </TableRow>
           </TableHead>
           <TableBody>

@@ -30,7 +30,7 @@ const TransactionHistory = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
-    // fetchTransactions();
+    setTransactions(fetchTransactions());
   }, []);
 
   const handleChangePage = (event, newPage) => {
@@ -101,13 +101,13 @@ const TransactionHistory = () => {
               {transactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((tx) => (
                 <TableRow key={tx.id}>
                   <TableCell>{tx.id}</TableCell>
-                  <TableCell>{tx.userName}</TableCell>
-                  <TableCell>{tx.planName}</TableCell>
-                  <TableCell>{tx.amount.toLocaleString('vi-VN')} VNĐ</TableCell>
+                  <TableCell>{tx.nguoiDung}</TableCell>
+                  <TableCell>{tx.nguoiDung}</TableCell>
+                  <TableCell>{tx.soTien.toLocaleString('vi-VN')} VNĐ</TableCell>
                   <TableCell>{new Date(tx.createdAt).toLocaleString('vi-VN')}</TableCell>
-                  <TableCell>{getStatusChip(tx.status)}</TableCell>
+                  <TableCell>{getStatusChip(tx.trangThai)}</TableCell>
                   <TableCell>
-                    {tx.status === 'pending' && (
+                    {tx.trangThai === 'pending' && (
                       <>
                         <IconButton color="success" onClick={() => handleApprove(tx.id)} title="Xác nhận">
                           <IssuesCloseOutlined />
