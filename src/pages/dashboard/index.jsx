@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { Box, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
 // import { DatePicker } from '@mui/x-date-pickers';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -19,7 +19,7 @@ import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import { Line, Pie } from '@ant-design/plots';
 
 const DashboardDefault = () => {
-  const [dateRange, setDateRange] = useState([null, null]);
+  // const [dateRange, setDateRange] = useState([null, null]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -112,7 +112,7 @@ const DashboardDefault = () => {
           <MainCard title="Top Font được tải xuống">
             <List>
               {topFonts.map((font, index) => (
-                <ListItem key={font.id} divider>
+                <ListItem key={font.id + index} divider>
                   <ListItemText primary={font.name} secondary={`${font.downloads.toLocaleString()} lượt tải`} />
                   <Typography color="primary">{font.revenue.toLocaleString()}đ</Typography>
                 </ListItem>
@@ -124,7 +124,7 @@ const DashboardDefault = () => {
           <MainCard title="Top khóa học">
             <List>
               {topCourses.map((course, index) => (
-                <ListItem key={course.id} divider>
+                <ListItem key={course.id + index} divider>
                   <ListItemText primary={course.name} secondary={`${course.students.toLocaleString()} học viên`} />
                   <Typography color="primary">{course.revenue.toLocaleString()}đ</Typography>
                 </ListItem>

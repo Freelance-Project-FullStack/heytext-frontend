@@ -1,7 +1,5 @@
-import axios from 'axios';
+import axios from 'utils/axios';
 import { mockFonts } from '../mockData/fonts';
-
-const API_URL = `${import.meta.env.VITE_APP_URL}/fonts`;
 
 export const fontService = {
   getAllFonts: async () => {
@@ -62,18 +60,18 @@ export const fontService = {
       }
     });
 
-    const response = await axios.put(`${API_URL}/${id}`, formData, {
+    const response = await axios.put(`/${id}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   },
 
   deleteFont: async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
+    await axios.delete(`/${id}`);
   },
 
   toggleFontStatus: async (id) => {
-    const response = await axios.patch(`${API_URL}/${id}/toggle-status`);
+    const response = await axios.patch(`/${id}/toggle-status`);
     return response.data;
   }
 };

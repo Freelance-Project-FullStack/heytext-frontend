@@ -119,8 +119,7 @@ const CourseList = () => {
       </Box>
       {error && (
         <Typography gutterBottom variant="h2">
-          {' '}
-          {error}{' '}
+          {error}
         </Typography>
       )}
       <Grid container spacing={3}>
@@ -156,7 +155,23 @@ const CourseList = () => {
                   <Typography variant="h6" color="primary">
                     {course.price.toLocaleString()}đ
                   </Typography>
-                  <Button variant="contained" startIcon={<ShoppingCartOutlined />} onClick={() => setOpenCourse(course)}>
+                  <Button
+                    variant="contained"
+                    startIcon={<ShoppingCartOutlined />}
+                    onClick={() =>
+                      setOpenCourse({
+                        ...course,
+                        lessons: [
+                          'Giới thiệu về Typography',
+                          'Các nguyên tắc cơ bản',
+                          'Phân loại font chữ',
+                          'Kỹ thuật phối font',
+                          'Thực hành thiết kế'
+                        ],
+                        features: ['Truy cập trọn đời', 'Chứng chỉ hoàn thành', 'Bài tập thực hành', 'Hỗ trợ 1-1', 'File thiết kế mẫu']
+                      })
+                    }
+                  >
                     Chi tiết
                   </Button>
                 </Box>
@@ -216,7 +231,7 @@ const CourseList = () => {
               </Grid>
             </DialogContent>
             <DialogActions sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, width: '100%' }}>
                 <Typography variant="h5" color="primary">
                   {openCourse.price.toLocaleString()}đ
                 </Typography>

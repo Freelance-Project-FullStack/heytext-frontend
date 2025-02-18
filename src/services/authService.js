@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:3000/api';
+import axios from 'utils/axios';
 
 const authService = {
   login: async (email, password) => {
     try {
-      const response = await axios.post(`${API_URL}/users/login`, {
+      const response = await axios.post(`/users/login`, {
         email,
         password
       });
@@ -20,7 +18,7 @@ const authService = {
 
   signup: async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/signup`, userData);
+      const response = await axios.post(`/signup`, userData);
       if (response.data.token) {
         localStorage.setItem('user', JSON.stringify(response.data));
       }
@@ -39,4 +37,4 @@ const authService = {
   }
 };
 
-export default authService; 
+export default authService;

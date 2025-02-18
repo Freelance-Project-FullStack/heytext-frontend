@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { IssuesCloseOutlined, StopOutlined } from '@ant-design/icons';
 import { fetchTransactions, approveTransaction, rejectTransaction } from 'services/transactionService';
+
 const TransactionHistory = () => {
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(0);
@@ -30,7 +31,11 @@ const TransactionHistory = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
-    setTransactions(fetchTransactions());
+    const fetchData = async () => {
+      const data = await fetchTransactions();
+      setTransactions(data || []);
+    };
+    fetchData();
   }, []);
 
   const handleChangePage = (event, newPage) => {
@@ -47,7 +52,8 @@ const TransactionHistory = () => {
       // Gọi API để approve transaction
       await approveTransaction(txId);
       // Refresh danh sách
-      fetchTransactions();
+      const data = await fetchTransactions();
+      setTransactions(data || []);
     } catch (error) {
       console.error('Error approving transaction:', error);
     }
@@ -56,12 +62,13 @@ const TransactionHistory = () => {
   const handleReject = async () => {
     try {
       // Gọi API để reject transaction
-      await rejectTransaction(selectedTx.id, rejectReason);
+      await rejectTransaction(selectedTx._id, rejectReason);
       setOpenDialog(false);
       setRejectReason('');
       setSelectedTx(null);
       // Refresh danh sách
-      fetchTransactions();
+      const data = await fetchTransactions();
+      setTransactions(data || []);
     } catch (error) {
       console.error('Error rejecting transaction:', error);
     }
@@ -70,8 +77,8 @@ const TransactionHistory = () => {
   const getStatusChip = (status) => {
     const statusConfig = {
       pending: { color: 'warning', label: 'Chờ xác nhận' },
-      approved: { color: 'success', label: 'Đã xác nhận' },
-      rejected: { color: 'error', label: 'Đã từ chối' }
+      success: { color: 'success', label: 'Đã xác nhận' },
+      failed: { color: 'error', label: 'Đã từ chối' }
     };
     const config = statusConfig[status] || statusConfig.pending;
     return <Chip label={config.label} color={config.color} />;
@@ -88,6 +95,7 @@ const TransactionHistory = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>ID</TableCell>
                 <TableCell>Mã giao dịch</TableCell>
                 <TableCell>Người dùng</TableCell>
                 <TableCell>Gói đăng ký</TableCell>
@@ -98,18 +106,19 @@ const TransactionHistory = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {transactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((tx) => (
-                <TableRow key={tx.id}>
-                  <TableCell>{tx.id}</TableCell>
+              {transactions?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((tx) => (
+                <TableRow key={tx._id + tx.maGiaoDich}>
+                  <TableCell>{tx._id}</TableCell>
+                  <TableCell>{tx.maGiaoDich}</TableCell>
                   <TableCell>{tx.nguoiDung}</TableCell>
                   <TableCell>{tx.nguoiDung}</TableCell>
                   <TableCell>{tx.soTien.toLocaleString('vi-VN')} VNĐ</TableCell>
-                  <TableCell>{new Date(tx.createdAt).toLocaleString('vi-VN')}</TableCell>
+                  <TableCell>{new Date(tx.ngayTao).toLocaleString('vi-VN')}</TableCell>
                   <TableCell>{getStatusChip(tx.trangThai)}</TableCell>
                   <TableCell>
                     {tx.trangThai === 'pending' && (
                       <>
-                        <IconButton color="success" onClick={() => handleApprove(tx.id)} title="Xác nhận">
+                        <IconButton color="success" onClick={() => handleApprove(tx._id)} title="Xác nhận">
                           <IssuesCloseOutlined />
                         </IconButton>
                         <IconButton

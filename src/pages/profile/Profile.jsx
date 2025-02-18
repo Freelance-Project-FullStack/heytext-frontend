@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { updateProfile, fetchFontDownloads, fetchUserCourses, fetchPaymentHistory } from 'store/reducers/profile';
 import { logout } from 'store/reducers/auth';
-import axios from 'axios';
+import axios from 'utils/axios';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -63,9 +63,10 @@ const Profile = () => {
   // Xử lý thanh toán VNPay
   const handlePayment = async () => {
     try {
-      const response = await axios.post('/api/payment/create-payment', {
-        amount: 990000,
-        orderDescription: 'Gia hạn gói Premium - 1 năm'
+      const response = await axios.post('/transaction', {
+        soTien: 990000,
+        nguoiDung: user?.name,
+        goiDangKy: 'Gia hạn gói Premium - 1 năm'
       });
       // Chuyển hướng đến trang thanh toán VNPay
       window.location.href = response.data.paymentUrl;

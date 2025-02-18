@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { SaveOutlined, EyeOutlined, EyeInvisibleOutlined, PayCircleOutlined, AuditOutlined, MailOutlined } from '@ant-design/icons';
 import { updatePaymentSettings, updateOpenAISettings, updateEmailSettings } from 'store/reducers/settings';
-import axios from 'axios';
+import axios from 'utils/axios';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const Settings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get('/api/settings');
+        const response = await axios.get('/settings');
         const settings = response.data;
         setPaymentForm(settings.payment.banking);
         setOpenaiForm(settings.openai);
@@ -71,9 +71,9 @@ const Settings = () => {
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/settings/update', {
-        payment: { banking: paymentForm }
-      });
+      // await axios.post('/settings/update', {
+      //   payment: { banking: paymentForm }
+      // });
       dispatch(updatePaymentSettings({ banking: paymentForm }));
       setSnackbar({
         open: true,

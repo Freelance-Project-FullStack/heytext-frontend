@@ -1,9 +1,21 @@
-import { CardMedia, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from '@mui/material';
+import {
+  CardMedia,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Typography,
+  Snackbar,
+  Alert
+} from '@mui/material';
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { generateVietQRCode } from 'utils/qrCode';
-import axios from 'axios';
+import axios from 'utils/axios';
 
 // eslint-disable-next-line react/prop-types
 const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
@@ -12,17 +24,30 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
   const [qrContent, setQrContent] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState('');
-
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+  const [checkouted, setCheckouted] = useState(false);
   useEffect(() => {
     try {
       const banking = settings.payment.banking;
       // Validate required fields
       if (!banking.merchantCode || !banking.accountNumber || !banking.accountName) {
-        throw new Error('Missing required banking information');
+        setSnackbar({
+          open: true,
+          message: 'Missing required banking information',
+          severity: 'error'
+        });
       }
 
       if (amount < 0) {
-        throw new Error('Invalid amount');
+        setSnackbar({
+          open: true,
+          message: 'Invalid amount',
+          severity: 'error'
+        });
       }
       const generateQR = async () => {
         try {
@@ -54,15 +79,27 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
   };
   const handleCheckout = async () => {
     try {
-      const res = await axios.post(import.meta.env.VITE_API_URL + '/checkout', {
+      const res = await axios.post('/transaction', {
         soTien: amount,
         nguoiDung: user?.name,
         goiDangKy: `Mua khóa học: ${orderId}`,
         courseId: orderId
       });
-      console.log('handleCheckout/', res.data);
+      setCheckouted(true);
+      console.log('[response API] handleCheckout:', res.data);
+      setSnackbar({
+        open: true,
+        message: 'Giao dịch chờ phê duyệt',
+        severity: 'warn'
+      });
     } catch (err) {
-      console.log(err);
+      console.log('[error API] handleCheckout:', err.message);
+      setCheckouted(true);
+      setSnackbar({
+        open: true,
+        message: 'Thanh toán thất bại',
+        severity: 'error'
+      });
     }
   };
 
@@ -126,8 +163,8 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
                   <strong>Nội dung CK:</strong> {settings.payment.banking.transferPrefix.replace('(userId)', user?.id) + orderId}
                 </Typography>
               </Box>
-              <Button variant="contained" color="primary" onClick={handleCheckout}>
-                Đã Thanh toán
+              <Button variant="contained" color="primary" onClick={handleCheckout} disabled={checkouted}>
+                {!checkouted ? 'Xác nhận đã Thanh toán' : 'Đã xác nhận'}
               </Button>
             </Grid>
           </Grid>
@@ -147,6 +184,12 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
