@@ -51,7 +51,6 @@ const generateMockFonts = () => {
       views: Math.floor(Math.random() * 5000),
       rating: (Math.random() * 2 + 3).toFixed(1), // Rating between 3.0 and 5.0
       isActive: Math.random() > 0.2, // 80% chance of being active
-      previewUrl: `/mock-previews/${i + 1}.png`,
       fontUrl: `/mock-fonts/${i + 1}.ttf`,
       tags: generateRandomTags(),
       createdAt: new Date(Date.now() - Math.random() * 10000000000)
@@ -105,5 +104,5 @@ const generateRandomTags = () => {
 
   return tags;
 };
-
+console.log(generateMockFonts());
 export const mockFonts = generateMockFonts();

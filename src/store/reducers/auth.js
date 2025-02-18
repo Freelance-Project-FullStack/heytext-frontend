@@ -94,7 +94,6 @@ export const login = (credentials) => async (dispatch) => {
 
     dispatch(loginSuccess({ token, user }));
     dispatch(fetchUserProfile());
-    console.log('useruseruseruser', user);
     return { user, redirectPath: getRedirectPath(user.role) };
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Đăng nhập thất bại'));

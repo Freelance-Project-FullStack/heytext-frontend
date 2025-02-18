@@ -19,9 +19,14 @@ import {
   Stack,
   Button,
   Drawer,
-  Divider
+  Divider,
+  Rating,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { FileSearchOutlined, OrderedListOutlined, TableOutlined, DownloadOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFontById, downloadFont, rateFont, getFonts } from 'store/reducers/fontSlice';
 
 const FONT_CATEGORIES = ['Sans Serif', 'Serif', 'Script', 'Display', 'Decorative', 'Monospace', 'Calligraphy', 'Handwritten'];
 
@@ -30,13 +35,21 @@ const FONT_STYLES = ['Regular', 'Bold', 'Italic', 'Light', 'Medium', 'Black'];
 const FONT_USES = ['Logo', 'Branding', 'Website', 'Print', 'Packaging', 'Social Media'];
 
 const FontSelector = () => {
-  const [fonts, setFonts] = useState([]);
+  const dispatch = useDispatch();
+  const { fonts, loading, error } = useSelector((state) => state.fonts);
+  
+  // Local States
   const [searchTerm, setSearchTerm] = useState('');
   const [fontSize, setFontSize] = useState(32);
   const [sampleText, setSampleText] = useState('Type something to preview');
   const [language, setLanguage] = useState('en');
   const [viewMode, setViewMode] = useState('grid');
   const [openFilters, setOpenFilters] = useState(false);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   // Font style controls
   const [fontStyles, setFontStyles] = useState({
@@ -56,26 +69,13 @@ const FontSelector = () => {
     rating: 0
   });
 
+  // Thêm state để theo dõi font đang được xem
+  const [selectedFontId, setSelectedFontId] = useState(null);
+
+  // Add this useEffect to load fonts from Redux
   useEffect(() => {
-    const mockFonts = [
-      {
-        id: 1,
-        name: 'Arial Pro',
-        downloads: 1500,
-        isPro: true,
-        price: 29.99,
-        fontFamily: 'Arial',
-        category: 'Sans Serif',
-        styles: ['Regular', 'Bold', 'Italic'],
-        uses: ['Website', 'Branding'],
-        rating: 4.5,
-        previewText: 'The quick brown fox jumps over the lazy dog',
-        tags: ['modern', 'clean', 'professional']
-      }
-      // ... more fonts
-    ];
-    setFonts(mockFonts);
-  }, []);
+    dispatch(getFonts());
+  }, [dispatch]);
 
   const handleFontSizeChange = (event, newValue) => {
     setFontSize(newValue);
@@ -88,26 +88,132 @@ const FontSelector = () => {
   };
 
   const handleLanguageChange = (event) => {
-    setLanguage(event.target.value);
+    const lang = event.target.value;
+    setLanguage(lang);
     const texts = {
       en: 'The quick brown fox jumps over the lazy dog',
       vi: 'Tôi yêu tiếng nước tôi từ khi mới ra đời',
       fr: 'Le vif renard brun saute par-dessus le chien paresseux'
     };
-    setSampleText(texts[event.target.value]);
+    setSampleText(texts[lang]);
   };
 
   const filteredFonts = fonts.filter((font) => {
     const matchesSearch = font.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategories = filters.categories.length === 0 || filters.categories.some((cat) => font.category === cat);
-    const matchesStyles = filters.styles.length === 0 || filters.styles.some((style) => font.styles.includes(style));
-    const matchesUses = filters.uses.length === 0 || filters.uses.some((use) => font.uses.includes(use));
+    const matchesCategories = filters.categories.length === 0 || filters.categories.includes(font.category);
+    const matchesStyles = filters.styles.length === 0 || filters.styles.some(style => font.styles.includes(style));
+    const matchesUses = filters.uses.length === 0 || filters.uses.some(use => font.uses.includes(use));
     const matchesDownloads = font.downloads >= filters.minDownloads;
     const matchesPrice = font.price <= filters.maxPrice;
     const matchesRating = font.rating >= filters.rating;
 
-    return matchesSearch && matchesCategories && matchesStyles && matchesUses && matchesDownloads && matchesPrice && matchesRating;
+    return matchesSearch && matchesCategories && matchesStyles && matchesUses && 
+           matchesDownloads && matchesPrice && matchesRating;
   });
+
+  // Handle font download
+  const handleDownload = async (fontId) => {
+    try {
+      await dispatch(downloadFont(fontId)).unwrap();
+      showNotification('Font downloaded successfully', 'success');
+    } catch (error) {
+      showNotification(error.message, 'error');
+    }
+  };
+
+  // Handle font rating
+  const handleRating = async (fontId, rating) => {
+    try {
+      await dispatch(rateFont({ id: fontId, rating })).unwrap();
+      showNotification('Rating updated successfully', 'success');
+    } catch (error) {
+      showNotification(error.message, 'error');
+    }
+  };
+
+  // Show notifications
+  const showNotification = (message, severity = 'success') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  // Render font card
+  const renderFontCard = (font) => (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Typography variant="h6">{font.name}</Typography>
+          <Stack direction="row" spacing={1}>
+            <Chip 
+              label={font.isPro ? 'PRO' : 'FREE'} 
+              color={font.isPro ? 'primary' : 'success'} 
+              size="small" 
+            />
+            {font.rating > 0 && (
+              <Chip 
+                icon={<StarOutlined />} 
+                label={font.rating.toFixed(1)} 
+                size="small" 
+                color="warning" 
+              />
+            )}
+          </Stack>
+        </Box>
+
+        <Typography
+          sx={{
+            fontFamily: font.fontFamily,
+            fontSize: `${fontSize}px`,
+            fontWeight: fontStyles.weight,
+            letterSpacing: `${fontStyles.letterSpacing}px`,
+            lineHeight: fontStyles.lineHeight,
+            textTransform: fontStyles.textTransform,
+            minHeight: '100px',
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          {sampleText}
+        </Typography>
+
+        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+          {font.styles.map((style) => (
+            <Chip key={style} label={style} size="small" variant="outlined" />
+          ))}
+        </Stack>
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              {font.downloads.toLocaleString()} downloads
+            </Typography>
+            {font.price > 0 && (
+              <Typography variant="body2" color="primary">
+                ${font.price}
+              </Typography>
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Rating
+              value={font.rating}
+              precision={0.5}
+              onChange={(event, newValue) => handleRating(font.id, newValue)}
+            />
+            <IconButton 
+              color="primary" 
+              onClick={() => handleDownload(font.id)}
+              disabled={loading}
+            >
+              <DownloadOutlined />
+            </IconButton>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -262,121 +368,26 @@ const FontSelector = () => {
       )}
 
       {/* Fonts Grid/List */}
-      {viewMode === 'grid' ? (
-        <Grid container spacing={3}>
-          {filteredFonts.map((font) => (
-            <Grid item xs={12} sm={6} md={4} key={font.id}>
-              <Card>
-                <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="h6">{font.name}</Typography>
-                    <Stack direction="row" spacing={1}>
-                      <Chip label={font.isPro ? 'PRO' : 'FREE'} color={font.isPro ? 'primary' : 'success'} size="small" />
-                      {font.rating && <Chip icon={<StarOutlined />} label={font.rating} size="small" color="warning" />}
-                    </Stack>
-                  </Box>
-
-                  <Typography
-                    sx={{
-                      fontFamily: font.fontFamily,
-                      fontSize: `${fontSize}px`,
-                      fontWeight: fontStyles.weight,
-                      letterSpacing: `${fontStyles.letterSpacing}px`,
-                      lineHeight: fontStyles.lineHeight,
-                      textTransform: fontStyles.textTransform,
-                      minHeight: '100px',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
-                    {sampleText}
-                  </Typography>
-
-                  <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                    {font.styles.map((style) => (
-                      <Chip key={style} label={style} size="small" variant="outlined" />
-                    ))}
-                  </Stack>
-
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {font.downloads.toLocaleString()} downloads
-                      </Typography>
-                      {font.price > 0 && (
-                        <Typography variant="body2" color="primary">
-                          ${font.price}
-                        </Typography>
-                      )}
-                    </Box>
-                    <IconButton color="primary">
-                      <DownloadOutlined />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+      {error ? (
+        <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
       ) : (
-        <Card>
-          {filteredFonts.map((font) => (
-            <Box
-              key={font.id}
-              sx={{
-                p: 2,
-                borderBottom: '1px solid',
-                borderColor: 'divider',
-                '&:last-child': { borderBottom: 'none' }
-              }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="h6">{font.name}</Typography>
-                  <Stack direction="row" spacing={1}>
-                    <Chip label={font.isPro ? 'PRO' : 'FREE'} color={font.isPro ? 'primary' : 'success'} size="small" />
-                    {font.rating && <Chip icon={<StarOutlined />} label={font.rating} size="small" color="warning" />}
-                  </Stack>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {font.downloads.toLocaleString()} downloads
-                  </Typography>
-                  {font.price > 0 && (
-                    <Typography variant="body2" color="primary">
-                      ${font.price}
-                    </Typography>
-                  )}
-                  <IconButton color="primary">
-                    <DownloadOutlined />
-                  </IconButton>
-                </Box>
+        viewMode === 'grid' ? (
+          <Grid container spacing={3}>
+            {filteredFonts.map((font) => (
+              <Grid item xs={12} sm={6} md={4} key={font.id}>
+                {renderFontCard(font)}
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <Stack spacing={2}>
+            {filteredFonts.map((font) => (
+              <Box key={font.id}>
+                {renderFontCard(font)}
               </Box>
-
-              <Typography
-                sx={{
-                  fontFamily: font.fontFamily,
-                  fontSize: `${fontSize}px`,
-                  fontWeight: fontStyles.weight,
-                  letterSpacing: `${fontStyles.letterSpacing}px`,
-                  lineHeight: fontStyles.lineHeight,
-                  textTransform: fontStyles.textTransform,
-                  minHeight: '80px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                {sampleText}
-              </Typography>
-
-              <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                {font.styles.map((style) => (
-                  <Chip key={style} label={style} size="small" variant="outlined" />
-                ))}
-              </Stack>
-            </Box>
-          ))}
-        </Card>
+            ))}
+          </Stack>
+        )
       )}
 
       {/* Filters Drawer */}
@@ -489,6 +500,20 @@ const FontSelector = () => {
           />
         </Box>
       </Drawer>
+
+      {/* Notifications */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={() => setNotification({ ...notification, open: false })}
+      >
+        <Alert 
+          severity={notification.severity}
+          onClose={() => setNotification({ ...notification, open: false })}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

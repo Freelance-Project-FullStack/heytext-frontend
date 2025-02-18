@@ -1,382 +1,296 @@
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   TextField,
   Button,
-  Switch,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  IconButton,
+  Stack,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
-  Select,
-  MenuItem,
   FormControl,
   InputLabel,
-  Grid,
-  Typography,
+  Select,
+  MenuItem,
   Chip,
-  Stack
+  Alert,
+  Snackbar
 } from '@mui/material';
-import { DeleteOutlined, EditOutlined, CloudUploadOutlined } from '@ant-design/icons';
-import { fontService } from '../../services/fontService';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { getFonts, createFont, updateFont, deleteFont } from 'store/reducers/fontSlice';
 
 const FONT_CATEGORIES = ['Sans Serif', 'Serif', 'Script', 'Display', 'Decorative', 'Monospace', 'Calligraphy', 'Handwritten'];
 
-const FONT_STYLES = ['Regular', 'Bold', 'Italic', 'Light', 'Medium', 'Black'];
-
-const FONT_USES = ['Logo', 'Branding', 'Website', 'Print', 'Packaging', 'Social Media', 'Advertisement'];
-
 const FontManagement = () => {
-  const [fonts, setFonts] = useState([]);
+  const dispatch = useDispatch();
+  const { fonts, loading, error } = useSelector((state) => state.fonts);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [open, setOpen] = useState(false);
-  const [currentFont, setCurrentFont] = useState(null);
-  const [filters, setFilters] = useState({
-    category: '',
-    style: '',
-    usage: ''
-  });
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedFont, setSelectedFont] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     category: '',
     styles: [],
     uses: [],
     price: 0,
     fontFile: null,
-    previewImage: null,
-    tags: []
+    previewImage: null
+  });
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
   });
 
   useEffect(() => {
     loadFonts();
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedFont) {
+      setFormData({
+        name: selectedFont.name,
+        category: selectedFont.category,
+        styles: selectedFont.styles,
+        uses: selectedFont.uses,
+        price: selectedFont.price
+      });
+    }
+  }, [selectedFont]);
 
   const loadFonts = async () => {
     try {
-      const data = await fontService.getAllFonts();
-      setFonts(data);
+      await dispatch(getFonts()).unwrap();
     } catch (error) {
-      console.error('Error loading fonts:', error);
-      // Add error handling/notification here
+      showNotification(error.message, 'error');
     }
-  };
-
-  const handleFileUpload = (event, type) => {
-    const file = event.target.files[0];
-    setFormData((prev) => ({
-      ...prev,
-      [type]: file
-    }));
-  };
-
-  const handleOpen = (font = null) => {
-    if (font) {
-      setCurrentFont(font);
-      setFormData({
-        name: font.name,
-        description: font.description,
-        category: font.category,
-        styles: font.styles,
-        uses: font.uses,
-        price: font.price,
-        tags: font.tags
-      });
-    } else {
-      setCurrentFont(null);
-      setFormData({
-        name: '',
-        description: '',
-        category: '',
-        styles: [],
-        uses: [],
-        price: 0,
-        fontFile: null,
-        previewImage: null,
-        tags: []
-      });
-    }
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setCurrentFont(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (currentFont) {
-        await fontService.updateFont(currentFont._id, formData);
+      const fontData = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (key === 'styles' || key === 'uses') {
+          fontData.append(key, JSON.stringify(formData[key]));
+        } else if (formData[key] instanceof File) {
+          fontData.append(key, formData[key]);
+        } else {
+          fontData.append(key, formData[key]);
+        }
+      });
+
+      if (selectedFont) {
+        await dispatch(updateFont({ id: selectedFont.id, fontData })).unwrap();
+        showNotification('Font updated successfully');
       } else {
-        await fontService.createFont(formData);
+        await dispatch(createFont(fontData)).unwrap();
+        showNotification('Font created successfully');
       }
+
+      handleCloseDialog();
       loadFonts();
-      handleClose();
     } catch (error) {
-      console.error('Error saving font:', error);
-      // Add error handling/notification here
+      showNotification(error.message, 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await fontService.deleteFont(id);
-      loadFonts();
-    } catch (error) {
-      console.error('Error deleting font:', error);
-      // Add error handling/notification here
+    if (window.confirm('Are you sure you want to delete this font?')) {
+      try {
+        await dispatch(deleteFont(id)).unwrap();
+        showNotification('Font deleted successfully');
+        loadFonts();
+      } catch (error) {
+        showNotification(error.message, 'error');
+      }
     }
   };
 
-  const handleToggleActive = async (id) => {
-    try {
-      await fontService.toggleFontStatus(id);
-      loadFonts();
-    } catch (error) {
-      console.error('Error toggling font status:', error);
-      // Add error handling/notification here
-    }
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedFont(null);
+    setFormData({
+      name: '',
+      category: '',
+      styles: [],
+      uses: [],
+      price: 0,
+      fontFile: null,
+      previewImage: null
+    });
   };
 
-  const filteredFonts = fonts.filter((font) => {
-    const matchesSearch = font.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !filters.category || font.category === filters.category;
-    const matchesStyle = !filters.style || font.styles.includes(filters.style);
-    const matchesUsage = !filters.usage || font.uses.includes(filters.usage);
-    return matchesSearch && matchesCategory && matchesStyle && matchesUsage;
-  });
+  const showNotification = (message, severity = 'success') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const filteredFonts = fonts.filter(
+    (font) => font.name.toLowerCase().includes(searchTerm.toLowerCase()) && (categoryFilter === 'all' || font.category === categoryFilter)
+  );
 
   return (
     <Box sx={{ p: 3 }}>
+      {/* Header Section */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h5">Font Management</Typography>
+        <Button variant="contained" startIcon={<PlusOutlined />} onClick={() => setOpenDialog(true)}>
+          Add New Font
+        </Button>
+      </Stack>
+
       {/* Search and Filter Section */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={4}>
-          <TextField
-            fullWidth
-            label="Tìm kiếm font"
-            variant="outlined"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Stack direction="row" spacing={2}>
-            <FormControl sx={{ minWidth: 150 }}>
-              <InputLabel>Danh mục</InputLabel>
-              <Select value={filters.category} label="Danh mục" onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
-                <MenuItem value="">Tất cả</MenuItem>
-                {FONT_CATEGORIES.map((cat) => (
-                  <MenuItem key={cat} value={cat}>
-                    {cat}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 150 }}>
-              <InputLabel>Kiểu chữ</InputLabel>
-              <Select value={filters.style} label="Kiểu chữ" onChange={(e) => setFilters({ ...filters, style: e.target.value })}>
-                <MenuItem value="">Tất cả</MenuItem>
-                {FONT_STYLES.map((style) => (
-                  <MenuItem key={style} value={style}>
-                    {style}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 150 }}>
-              <InputLabel>Mục đích sử dụng</InputLabel>
-              <Select value={filters.usage} label="Mục đích sử dụng" onChange={(e) => setFilters({ ...filters, usage: e.target.value })}>
-                <MenuItem value="">Tất cả</MenuItem>
-                {FONT_USES.map((use) => (
-                  <MenuItem key={use} value={use}>
-                    {use}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={2}>
-          <Button fullWidth variant="contained" startIcon={<CloudUploadOutlined />} onClick={() => handleOpen()} sx={{ height: '100%' }}>
-            Thêm Font Mới
-          </Button>
-        </Grid>
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                placeholder="Search fonts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: <SearchOutlined style={{ marginRight: 8 }} />
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
+                <InputLabel>Category Filter</InputLabel>
+                <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} label="Category Filter">
+                  <MenuItem value="all">All Categories</MenuItem>
+                  {FONT_CATEGORIES.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Fonts Grid */}
+      <Grid container spacing={3}>
+        {filteredFonts.map((font) => (
+          <Grid item xs={12} md={6} lg={4} key={font.id}>
+            <Card>
+              <CardContent>
+                <Stack spacing={2}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6">{font.name}</Typography>
+                    <Stack direction="row" spacing={1}>
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          setSelectedFont(font);
+                          setOpenDialog(true);
+                        }}
+                      >
+                        <EditOutlined />
+                      </IconButton>
+                      <IconButton size="small" color="error" onClick={() => handleDelete(font.id)}>
+                        <DeleteOutlined />
+                      </IconButton>
+                    </Stack>
+                  </Stack>
+
+                  <Typography variant="body2" color="text.secondary">
+                    Category: {font.category}
+                  </Typography>
+
+                  <Stack direction="row" spacing={1} flexWrap="wrap">
+                    {font.styles.map((style) => (
+                      <Chip key={style} label={style} size="small" />
+                    ))}
+                  </Stack>
+
+                  <Typography variant="body2">Price: ${font.price}</Typography>
+
+                  <Typography variant="body2">Downloads: {font.downloads}</Typography>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
 
-      {/* Fonts Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Preview</TableCell>
-              <TableCell>Tên Font</TableCell>
-              <TableCell>Danh mục</TableCell>
-              <TableCell>Kiểu chữ</TableCell>
-              <TableCell>Giá</TableCell>
-              <TableCell>Lượt tải</TableCell>
-              <TableCell>Lượt xem</TableCell>
-              <TableCell>Đánh giá</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredFonts.map((font) => (
-              <TableRow key={font.id}>
-                <TableCell>
-                  <img src={font.previewUrl} alt={font.name} style={{ height: 40, width: 'auto' }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">{font.name}</Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {font.description}
-                  </Typography>
-                </TableCell>
-                <TableCell>{font.category}</TableCell>
-                <TableCell>
-                  {font.styles.map((style) => (
-                    <Chip key={style} label={style} size="small" sx={{ m: 0.5 }} />
-                  ))}
-                </TableCell>
-                <TableCell>${font.price}</TableCell>
-                <TableCell>{font.downloads}</TableCell>
-                <TableCell>{font.views}</TableCell>
-                <TableCell>{font.rating}/5</TableCell>
-                <TableCell>
-                  <Switch checked={font.isActive} onChange={() => handleToggleActive(font.id)} />
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(font)}>
-                    <EditOutlined />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(font.id)}>
-                    <DeleteOutlined />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* Add/Edit Dialog */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>{selectedFont ? 'Edit Font' : 'Add New Font'}</DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={3}>
+            <TextField
+              fullWidth
+              label="Font Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
 
-      {/* Add/Edit Font Dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>{currentFont ? 'Chỉnh sửa Font' : 'Thêm Font Mới'}</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Tên Font"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Giá"
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Mô tả"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Danh mục</InputLabel>
-                <Select value={formData.category} label="Danh mục" onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                  {FONT_CATEGORIES.map((cat) => (
-                    <MenuItem key={cat} value={cat}>
-                      {cat}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Kiểu chữ</InputLabel>
-                <Select
-                  multiple
-                  value={formData.styles}
-                  label="Kiểu chữ"
-                  onChange={(e) => setFormData({ ...formData, styles: e.target.value })}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </Box>
-                  )}
-                >
-                  {FONT_STYLES.map((style) => (
-                    <MenuItem key={style} value={style}>
-                      {style}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadOutlined />}>
+            <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} label="Category">
+                {FONT_CATEGORIES.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              type="number"
+              fullWidth
+              label="Price"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+            />
+
+            {!selectedFont && (
+              <Button variant="outlined" component="label">
                 Upload Font File
-                <input type="file" hidden accept=".ttf,.otf" onChange={(e) => handleFileUpload(e, 'fontFile')} />
+                <input
+                  type="file"
+                  hidden
+                  accept=".ttf,.otf"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      fontFile: e.target.files[0]
+                    })
+                  }
+                />
               </Button>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadOutlined />}>
-                Upload Preview Image
-                <input type="file" hidden accept="image/*" onChange={(e) => handleFileUpload(e, 'previewImage')} />
-              </Button>
-            </Grid>
-            {/* Font Preview Section */}
-            {formData.fontUrl && (
-              <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-                  Font Preview
-                </Typography>
-                <Box
-                  sx={{
-                    p: 2,
-                    border: '1px solid #ddd',
-                    borderRadius: 1,
-                    fontFamily: currentFont?.name
-                  }}
-                >
-                  <Typography variant="h5">The quick brown fox jumps over the lazy dog</Typography>
-                  <Typography>ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 1234567890</Typography>
-                </Box>
-              </Grid>
             )}
-          </Grid>
+          </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Hủy</Button>
-          <Button variant="contained" onClick={handleSubmit}>
-            {currentFont ? 'Cập nhật' : 'Thêm mới'}
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button variant="contained" onClick={handleSubmit} disabled={loading}>
+            {selectedFont ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Notifications */}
+      <Snackbar open={notification.open} autoHideDuration={6000} onClose={() => setNotification({ ...notification, open: false })}>
+        <Alert severity={notification.severity} onClose={() => setNotification({ ...notification, open: false })}>
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
