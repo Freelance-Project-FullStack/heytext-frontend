@@ -79,7 +79,7 @@ export const getRedirectPath = (role) => {
     case 'user':
       return '/fonts';
     default:
-      return '/';
+      return '/fonts';
   }
 };
 
@@ -87,7 +87,6 @@ export const login = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const response = await axios.post(`${API_URL}/users/login`, credentials);
-    console.log('response.data', response.data);
     const { token, user } = response.data;
 
     // Set token in axios headers
@@ -95,6 +94,7 @@ export const login = (credentials) => async (dispatch) => {
 
     dispatch(loginSuccess({ token, user }));
     dispatch(fetchUserProfile());
+    console.log('useruseruseruser', user);
     return { user, redirectPath: getRedirectPath(user.role) };
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Đăng nhập thất bại'));

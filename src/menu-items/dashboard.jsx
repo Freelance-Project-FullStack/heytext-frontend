@@ -30,7 +30,8 @@ const dashboard = {
       type: 'item',
       url: '/admin/dashboard',
       icon: icons.DashboardOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      requireRoles: ['admin']
     },
     {
       id: 'admin-users',
@@ -38,7 +39,8 @@ const dashboard = {
       type: 'item',
       url: '/admin/users',
       icon: icons.UserOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      requireRoles: ['admin']
     },
     {
       id: 'admin-courses',
@@ -46,7 +48,8 @@ const dashboard = {
       type: 'item',
       url: '/admin/courses',
       icon: icons.CodeSandboxOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      requireRoles: ['admin']
     },
     {
       id: 'admin-fonts',
@@ -54,7 +57,8 @@ const dashboard = {
       type: 'item',
       url: '/admin/fonts',
       icon: icons.FontColorsOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      requireRoles: ['admin']
     },
     {
       id: 'admin-settings',
@@ -62,7 +66,8 @@ const dashboard = {
       type: 'item',
       url: '/admin/settings',
       icon: icons.SettingOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      requireRoles: ['admin']
     },
     {
       id: 'admin-transactions',
@@ -70,7 +75,8 @@ const dashboard = {
       type: 'item',
       title: 'Lịch sử giao dịch',
       icon: icons.SnippetsOutlined,
-      breadcrumbs: false
+      breadcrumbs: false,
+      requireRoles: ['admin']
     }
   ]
 };

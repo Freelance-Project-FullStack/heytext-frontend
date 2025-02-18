@@ -24,13 +24,10 @@ const PrivateRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (!isAuthenticated) {
-    // Lưu đường dẫn hiện tại vào state
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  // Kiểm tra quyền truy cập nếu có
   if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    // Chuyển hướng về trang mặc định của role hiện tại
     return <Navigate to="/unauthorized" replace />;
   }
 

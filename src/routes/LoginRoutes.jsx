@@ -26,6 +26,14 @@ const LoginRoutes = {
     {
       path: '/callback',
       element: <Callback />
+    },
+    {
+      path: '/unauthorized',
+      element: <Callback />
+    },
+    {
+      path: '/404',
+      element: <Callback />
     }
   ]
 };
