@@ -5,18 +5,23 @@ import { useSelector } from 'react-redux';
 
 // project import
 import NavGroup from './NavGroup';
-import menuItem from 'menu-items';
-
+import dashboard from 'menu-items/dashboard';
+import pages from 'menu-items/page';
+import support from 'menu-items/support';
+import { useEffect, useState } from 'react';
 // ==============================|| DRAWER CONTENT - NAVIGATION ||============================== //
 
 export default function Navigation() {
   const { role } = useSelector((state) => state.auth);
+  const [menuItem, setMenuItem] = useState([]);
+  useEffect(() => {
+    const authRole = localStorage.getItem('userRole');
+    if (authRole == 'admin') {
+      setMenuItem([dashboard, pages, support]);
+    } else setMenuItem([pages, support]);
+  }, [role]);
 
-  const filteredItems = menuItem.items.filter((item) => {
-    return !item.requireRoles || item.requireRoles.includes(role);
-  });
-
-  const navGroups = filteredItems.map((item) => {
+  const navGroups = menuItem.map((item) => {
     switch (item.type) {
       case 'group':
         return <NavGroup key={item.id} item={item} />;
