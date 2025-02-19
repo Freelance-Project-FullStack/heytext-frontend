@@ -238,6 +238,7 @@ const CourseList = () => {
                 <PaymentQRCode
                   amount={openCourse.price}
                   orderId={`cource_${openCourse.id}`}
+                  packageId={false}
                   variant="contained"
                   size="large"
                   label="Mua khóa học"

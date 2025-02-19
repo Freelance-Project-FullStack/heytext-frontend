@@ -51,10 +51,18 @@ const PricingPlans = () => {
       </Typography>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
-        <Button variant={billingPeriod === 'monthly' ? 'contained' : 'outlined'} onClick={() => setBillingPeriod('monthly')} sx={{ mr: 1, fontSize: '16px', padding: '8px 16px' }}>
+        <Button
+          variant={billingPeriod === 'monthly' ? 'contained' : 'outlined'}
+          onClick={() => setBillingPeriod('monthly')}
+          sx={{ mr: 1, fontSize: '16px', padding: '8px 16px' }}
+        >
           Theo tháng
         </Button>
-        <Button variant={billingPeriod === 'yearly' ? 'contained' : 'outlined'} onClick={() => setBillingPeriod('yearly')} sx={{ fontSize: '16px', padding: '8px 16px' }}>
+        <Button
+          variant={billingPeriod === 'yearly' ? 'contained' : 'outlined'}
+          onClick={() => setBillingPeriod('yearly')}
+          sx={{ fontSize: '16px', padding: '8px 16px' }}
+        >
           Theo năm
           <Chip label="Tiết kiệm 20%" color="success" size="small" sx={{ ml: 1 }} />
         </Button>
@@ -82,26 +90,26 @@ const PricingPlans = () => {
               }}
             >
               <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-                <Typography 
-                  variant="h6" 
-                  gutterBottom 
+                <Typography
+                  variant="h6"
+                  gutterBottom
                   sx={{
-                    fontWeight: 'bold', 
-                    textAlign: 'center', 
+                    fontWeight: 'bold',
+                    textAlign: 'center',
                     color: plan.name === 'Premium' ? '#4caf50' : 'black', // Highlight Premium
                     fontSize: '1.25rem'
                   }}
                 >
                   {plan.name}
                 </Typography>
-                <Typography 
-                  variant="h6" 
-                  color="text.secondary" 
+                <Typography
+                  variant="h6"
+                  color="text.secondary"
                   sx={{
-                    textAlign: 'center', 
+                    textAlign: 'center',
                     fontSize: '1.5rem',
                     fontWeight: 'bold',
-                    color: plan.name === 'Premium' ? '#4caf50' : 'black', // Price color for Premium
+                    color: plan.name === 'Premium' ? '#4caf50' : 'black' // Price color for Premium
                   }}
                 >
                   {billingPeriod === 'monthly' ? `$${plan.price.monthly}/tháng` : `$${plan.price.yearly}/năm`}
@@ -111,13 +119,13 @@ const PricingPlans = () => {
                   {plan.features.map((feature, i) => (
                     <ListItem key={i}>
                       <ListItemIcon>{feature.icon}</ListItemIcon>
-                      <ListItemText 
-                        primary={feature.text} 
+                      <ListItemText
+                        primary={feature.text}
                         sx={{
-                          color: feature.available ? 'black' : 'gray', 
+                          color: feature.available ? 'black' : 'gray',
                           textDecoration: feature.available ? 'none' : 'line-through',
                           textDecorationColor: 'red'
-                        }} 
+                        }}
                       />
                     </ListItem>
                   ))}
@@ -126,6 +134,7 @@ const PricingPlans = () => {
                 <PaymentQRCode
                   amount={billingPeriod === 'monthly' ? plan.price.monthly : plan.price.yearly}
                   orderId={plan.name}
+                  packageId="Premium"
                   label="Thanh toán"
                   variant={plan.buttonVariant}
                   fullWidth
