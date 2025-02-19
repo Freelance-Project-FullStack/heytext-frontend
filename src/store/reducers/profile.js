@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'utils/axios';
 
-const API_URL = import.meta.env.VITE_APP_URL;
-
 const initialState = {
   user: {
     id: 1,

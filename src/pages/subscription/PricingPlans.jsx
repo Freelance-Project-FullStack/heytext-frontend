@@ -70,7 +70,7 @@ const PricingPlans = () => {
 
       <Grid container spacing={4} justifyContent="center">
         {plans.map((plan, index) => (
-          <Grid item xs={12} md={6} key={index}>
+          <Grid item xs={8} md={4} key={index}>
             <Card
               sx={{
                 borderRadius: 2,
