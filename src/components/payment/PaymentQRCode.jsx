@@ -18,7 +18,7 @@ import { generateVietQRCode } from 'utils/qrCode';
 import axios from 'utils/axios';
 
 // eslint-disable-next-line react/prop-types
-const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
+const PaymentQRCode = ({ amount, orderId, label, packageId = 'Premium', ...rest }) => {
   const settings = useSelector((state) => state.settings);
   const { user } = useSelector((state) => state.auth);
   const [qrContent, setQrContent] = useState('');
@@ -81,9 +81,10 @@ const PaymentQRCode = ({ amount, orderId, label, ...rest }) => {
     try {
       const res = await axios.post('/transaction', {
         soTien: amount,
-        nguoiDung: user?.name,
-        goiDangKy: `Mua khóa học: ${orderId}`,
-        courseId: orderId
+        nguoiDung: user?.id,
+        goiDangKy: packageId ? `Mua gói premium` : `Mua khóa học: ${orderId}`,
+        courseId: orderId,
+        packageId: packageId
       });
       setCheckouted(true);
       console.log('[response API] handleCheckout:', res.data);
