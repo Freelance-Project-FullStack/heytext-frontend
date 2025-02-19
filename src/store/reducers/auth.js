@@ -64,12 +64,16 @@ const authSlice = createSlice({
       state.error = null;
       state.loading = false;
       localStorage.setItem('token', action.payload.token);
-    }
+    },
+    setErrorAuth: (state, action) => {
+      state.errorAuth = action.payload;
+      state.loading = false;
+    },
   }
 });
 
 // Actions
-export const { setLoading, loginSuccess, logoutSuccess, setError, setUser, signupSuccess } = authSlice.actions;
+export const { setLoading, loginSuccess, logoutSuccess, setError, setUser, signupSuccess, setErrorAuth } = authSlice.actions;
 
 // Thêm hàm helper để xác định trang chuyển hướng
 export const getRedirectPath = (role) => {
@@ -114,7 +118,7 @@ export const signup = (credentials) => async (dispatch) => {
     dispatch(signupSuccess({ token, user, email, role, name }));
     return response.data;
   } catch (error) {
-    dispatch(setError(error.response?.data?.message || 'Login failed'));
+    dispatch(setErrorAuth(error.response?.data?.message || 'Signup failed'));
     throw error;
   }
 };

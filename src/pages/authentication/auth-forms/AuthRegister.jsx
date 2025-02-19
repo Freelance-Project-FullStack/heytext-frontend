@@ -36,7 +36,7 @@ export default function AuthRegister() {
   const navigate = useNavigate();
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, errorAuth } = useSelector((state) => state.auth);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -63,7 +63,6 @@ export default function AuthRegister() {
       );
       navigate('/fonts');
     } catch (err) {
-      setError(err.message);
       setSubmitting(false);
     }
   };
@@ -101,9 +100,9 @@ export default function AuthRegister() {
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
               )}
-              {error && (
+              {errorAuth && (
                 <Grid item xs={12}>
-                  <FormHelperText error>{error}</FormHelperText>
+                  <FormHelperText error>{errorAuth}</FormHelperText>
                 </Grid>
               )}
               <Grid item xs={12}>

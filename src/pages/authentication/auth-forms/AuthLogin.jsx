@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
@@ -27,11 +27,10 @@ import { Box } from '@mui/material';
 const AuthLogin = () => {
   const [checked, setChecked] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [error, setError] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -53,7 +52,6 @@ const AuthLogin = () => {
       navigate(redirectPath, { replace: true });
     } catch (err) {
       console.log(err.message);
-      setError(err.response?.data?.message || 'Đăng nhập thất bại');
       setSubmitting(false);
     }
   };
