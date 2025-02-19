@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from 'utils/axios';
 import { fetchUserProfile } from './profile';
-
-const API_URL = import.meta.env.VITE_APP_URL;
 
 // Thêm hàm kiểm tra token
 const checkAuthToken = () => {
@@ -91,7 +89,7 @@ export const getRedirectPath = (role) => {
 export const login = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.post(`${API_URL}/users/login`, credentials);
+    const response = await axios.post(`/users/login`, credentials);
     const { token, user } = response.data;
 
     // Set token in axios headers
@@ -110,7 +108,7 @@ export const login = (credentials) => async (dispatch) => {
 export const signup = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.post(`${API_URL}/users/signup`, credentials);
+    const response = await axios.post(`/users/signup`, credentials);
     const { token, user, email, role, name } = response.data;
 
     // Set token in axios headers
@@ -140,7 +138,7 @@ export const checkAuthStatus = () => async (dispatch) => {
 
   try {
     // Gọi API để verify token và lấy thông tin user
-    const response = await axios.get(`${API_URL}/users/me`);
+    const response = await axios.get(`/users/me`);
     dispatch(loginSuccess({ token, user: response.data }));
   } catch (error) {
     // Nếu token không hợp lệ, logout

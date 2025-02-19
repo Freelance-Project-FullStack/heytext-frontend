@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from 'utils/axios';
 
 const API_URL = import.meta.env.VITE_APP_URL;
 
@@ -144,7 +144,7 @@ export const { setLoading, setError, setProfileData, setFontDownloads, setCourse
 export const fetchUserProfile = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.get(`${API_URL}/users/profile`);
+    const response = await axios.get(`/users/profile`);
     dispatch(setProfileData(response.data));
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch profile'));
@@ -154,7 +154,7 @@ export const fetchUserProfile = () => async (dispatch) => {
 export const fetchFontDownloads = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.get(`${API_URL}/users/font-downloads`);
+    const response = await axios.get(`/users/font-downloads`);
     dispatch(setFontDownloads(response.data));
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch font downloads'));
@@ -164,7 +164,7 @@ export const fetchFontDownloads = () => async (dispatch) => {
 export const fetchUserCourses = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.get(`${API_URL}/users/courses`);
+    const response = await axios.get(`/users/courses`);
     dispatch(setCourses(response.data));
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch courses'));
@@ -174,7 +174,7 @@ export const fetchUserCourses = () => async (dispatch) => {
 export const fetchPaymentHistory = () => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.get(`${API_URL}/users/payments`);
+    const response = await axios.get(`/users/payments`);
     dispatch(setPayments(response.data));
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Failed to fetch payment history'));
@@ -184,7 +184,7 @@ export const fetchPaymentHistory = () => async (dispatch) => {
 export const updateProfile = (profileData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await axios.put(`${API_URL}/users/profile`, profileData);
+    const response = await axios.put(`/users/profile`, profileData);
     dispatch(setProfileData(response.data));
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Failed to update profile'));
