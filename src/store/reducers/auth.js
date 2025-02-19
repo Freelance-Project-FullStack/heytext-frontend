@@ -35,6 +35,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.role = action.payload.user.role;
+      state.subscription = action.payload?.user?.subscription;
       state.error = null;
       state.loading = false;
       localStorage.setItem('token', action.payload.token);
