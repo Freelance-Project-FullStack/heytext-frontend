@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-
 const baseURL = import.meta.env.VITE_APP_URL;
 
 function Callback() {
