@@ -32,7 +32,8 @@ const Profile = () => {
   const navigate = useNavigate();
 
   // Replace context with Redux selectors
-  const { user, fontDownloads, courses, payments } = useSelector((state) => state.profile);
+  const { fontDownloads, courses, payments } = useSelector((state) => state.profile);
+  const { user } = useSelector((state) => state.auth);
 
   const [currentTab, setCurrentTab] = useState(0);
   const [openEdit, setOpenEdit] = useState(false);

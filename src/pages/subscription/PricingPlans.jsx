@@ -45,7 +45,7 @@ const PricingPlans = () => {
   ];
 
   return (
-    <Box sx={{ p: 2, pl: 10 }}>
+    <Box sx={{ p: 2 }}>
       <Typography variant="h4" align="center" gutterBottom>
         Chọn gói phù hợp với bạn
       </Typography>
@@ -68,7 +68,7 @@ const PricingPlans = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={4} justifyContent="center">
+      <Grid container spacing={0} pl={4} justifyContent="center" >
         {plans.map((plan, index) => (
           <Grid item xs={8} md={4} key={index}>
             <Card
@@ -79,9 +79,9 @@ const PricingPlans = () => {
                 backgroundColor: plan.highlighted ? '#e8f5e9' : 'white',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between',
+                justifyContent: 'space-around',
                 height: '100%', // Ensures consistent card height
-                width: plan.name === 'Free' ? '80%' : '80%', // Reduce width for "Free" plan
+                width: '90%',
                 transition: 'transform 0.3s, box-shadow 0.3s',
                 '&:hover': {
                   boxShadow: 6,

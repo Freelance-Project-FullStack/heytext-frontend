@@ -155,6 +155,13 @@ const CourseList = () => {
                   <Typography variant="h6" color="primary">
                     {course.price.toLocaleString()}đ
                   </Typography>
+
+                </Box>
+                <Box sx={{ mt: 1,width:'80%' }}>
+                  {course?.tags?.length &&
+                    course?.tags?.map((tag, index) => <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />)}
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0 }}>
                   <Button
                     variant="contained"
                     startIcon={<ShoppingCartOutlined />}
@@ -174,10 +181,6 @@ const CourseList = () => {
                   >
                     Chi tiết
                   </Button>
-                </Box>
-                <Box sx={{ mt: 1 }}>
-                  {course?.tags?.length &&
-                    course?.tags?.map((tag, index) => <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />)}
                 </Box>
               </CardContent>
             </Card>
