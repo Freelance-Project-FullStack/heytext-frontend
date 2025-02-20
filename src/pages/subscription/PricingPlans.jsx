@@ -8,7 +8,9 @@ const PricingPlans = () => {
 
   const plans = [
     {
+      title: 'Basic',
       name: 'Free',
+      description: 'A budget-friendly option for those who want to try out the service',
       price: {
         monthly: 0,
         yearly: 0
@@ -25,7 +27,9 @@ const PricingPlans = () => {
       buttonVariant: 'outlined'
     },
     {
+      title: 'Professional',
       name: 'Premium',
+      description: 'A budget-friendly option for those who want to try out the service',
       price: {
         monthly: 99000,
         yearly: 990000
@@ -90,14 +94,25 @@ const PricingPlans = () => {
               }}
             >
               <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-                <Typography
-                  variant="h6"
-                  gutterBottom
+                {/* <Typography
+                  variant="h9"
                   sx={{
                     fontWeight: 'bold',
-                    textAlign: 'center',
+                    paddingLeft: '1rem',
+                    paddingTop: '0.5rem',
+                    color: plan.title === 'Premium' ? '#4caf50' : 'black', // Highlight Premium
+                  }}
+                >
+                  {plan.title}
+                </Typography> */}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 'bold',
+                    paddingLeft: '1rem',
+                    paddingBottom: '0.6rem',
                     color: plan.name === 'Premium' ? '#4caf50' : 'black', // Highlight Premium
-                    fontSize: '1.25rem'
+                    fontSize: '1.5rem'
                   }}
                 >
                   {plan.name}
@@ -106,16 +121,49 @@ const PricingPlans = () => {
                   variant="h6"
                   color="text.secondary"
                   sx={{
-                    textAlign: 'center',
-                    fontSize: '1.5rem',
-                    fontWeight: 'bold',
-                    color: plan.name === 'Premium' ? '#4caf50' : 'black' // Price color for Premium
+                    paddingLeft: '1rem',
+                    paddingBottom: '0.5rem',
+                    color: plan.name === 'Premium' ? '#4caf50' : 'black'
                   }}
                 >
-                  {billingPeriod === 'monthly' ? `$${plan.price.monthly}/tháng` : `$${plan.price.yearly}/năm`}
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontSize: '2.5rem', // Kích thước lớn hơn cho giá
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {billingPeriod === 'monthly' ? `$${plan.price.monthly}` : `$${plan.price.yearly}`}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontSize: '1rem', // Kích thước nhỏ hơn cho đơn vị thời gian
+                      fontWeight: 'normal',
+                      marginLeft: '0.25rem'
+                    }}
+                  >
+                    {billingPeriod === 'monthly' ? '/tháng' : '/năm'}
+                  </Typography>
                 </Typography>
 
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 'bold',
+                    paddingLeft: '1rem',
+                    color: 'gray',
+                    fontSize: '0.8rem'
+                  }}
+                >
+                  {plan.description}
+                </Typography>
+
+
                 <List sx={{ mt: 2 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', paddingLeft: '1rem',paddingBottom: '0.5rem' }} >Features</Typography>
+       
                   {plan.features.map((feature, i) => (
                     <ListItem key={i}>
                       <ListItemIcon>{feature.icon}</ListItemIcon>
