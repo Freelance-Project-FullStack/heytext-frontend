@@ -1,12 +1,10 @@
-import { RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store';
 
 // project import
-import router from './routes';
+import AppRoutes from './routes';
 import ThemeCustomization from 'themes';
-
-import ScrollTop from 'components/ScrollTop';
+// import ScrollTop from 'components/ScrollTop';
 import AuthCheck from './components/AuthCheck';
 
 // ==============================|| APP - THEME, ROUTER, LOCAL ||============================== //
@@ -16,9 +14,7 @@ export default function App() {
     <Provider store={store}>
       <AuthCheck>
         <ThemeCustomization>
-          <ScrollTop>
-            <RouterProvider router={router} />
-          </ScrollTop>
+          <AppRoutes />
         </ThemeCustomization>
       </AuthCheck>
     </Provider>
