@@ -14,6 +14,7 @@ import {
   TextField
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import axios from 'utils/axios';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -23,7 +24,7 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_APP_URL}/users`);
+        const response = await axios.get(`/users`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -43,7 +44,7 @@ const UserManagement = () => {
 
   const updateUser = async (userId, updates) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_URL}/users/${userId}`, {
+      const response = await axios.get(`/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

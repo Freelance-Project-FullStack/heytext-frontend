@@ -20,6 +20,7 @@ import {
   InputAdornment
 } from '@mui/material';
 import { DeleteOutlined, EditOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import axios from 'utils/axios';
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
@@ -43,7 +44,7 @@ const CourseManagement = () => {
     const fetchCourses = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${import.meta.env.VITE_APP_URL}/courses`);
+        const response = await axios.get(`/courses`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -110,7 +111,7 @@ const CourseManagement = () => {
       let updatedCourse;
       if (currentCourse) {
         // Update existing course
-        response = await fetch(`${import.meta.env.VITE_APP_URL}/courses/${currentCourse._id}`, {
+        response = await axios.get(`/courses/${currentCourse._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(processedData)
@@ -127,7 +128,7 @@ const CourseManagement = () => {
         handleClose();
       } else {
         // Add new course
-        response = await fetch(`${import.meta.env.VITE_APP_URL}/courses`, {
+        response = await axios.get(`/courses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(processedData)
@@ -158,7 +159,7 @@ const CourseManagement = () => {
   // Handle course deletion
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_URL}/courses/${id}`, {
+      const response = await axios.get(`/courses/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) {

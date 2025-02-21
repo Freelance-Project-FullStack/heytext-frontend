@@ -31,6 +31,7 @@ import {
 import PaymentQRCode from 'components/payment/PaymentQRCode';
 import { useSelector } from 'react-redux';
 import Loader from 'components/Loader';
+import axios from 'utils/axios';
 
 const CourseList = () => {
   const { user } = useSelector((state) => state.profile);
@@ -44,7 +45,7 @@ const CourseList = () => {
     const fetchCourses = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${import.meta.env.VITE_APP_URL}/courses`);
+        const response = await axios.get(`/courses`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -74,7 +75,7 @@ const CourseList = () => {
   const handlePurchase = async (course) => {
     try {
       // Gọi API tạo đơn hàng VNPay
-      const response = await fetch(`${import.meta.env.VITE_APP_URL}/payment/create`, {
+      const response = await axios.get(`/payment/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -155,9 +156,8 @@ const CourseList = () => {
                   <Typography variant="h6" color="primary">
                     {course.price.toLocaleString()}đ
                   </Typography>
-
                 </Box>
-                <Box sx={{ mt: 1,width:'80%' }}>
+                <Box sx={{ mt: 1, width: '80%' }}>
                   {course?.tags?.length &&
                     course?.tags?.map((tag, index) => <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />)}
                 </Box>
