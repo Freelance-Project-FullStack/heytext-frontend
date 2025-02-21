@@ -25,10 +25,7 @@ const UserManagement = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(`/users`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await response.data;
         console.log('Danh sách người dùng:', data.result.data);
         setUsers(data.result.data);
       } catch (error) {

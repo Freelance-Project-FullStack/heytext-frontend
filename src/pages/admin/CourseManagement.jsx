@@ -45,10 +45,10 @@ const CourseManagement = () => {
       setLoading(true);
       try {
         const response = await axios.get(`/courses`);
-        if (!response.ok) {
+        const data = response.data;
+        if (!data.success) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.json();
         if (data.status === 'success') {
           setCourses(data.result.data);
         } else {
