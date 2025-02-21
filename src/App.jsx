@@ -5,7 +5,7 @@ import store from './store';
 // project import
 import router from './routes';
 import ThemeCustomization from 'themes';
-
+import { BrowserRouter } from 'react-router-dom';
 import ScrollTop from 'components/ScrollTop';
 import AuthCheck from './components/AuthCheck';
 
@@ -16,9 +16,11 @@ export default function App() {
     <Provider store={store}>
       <AuthCheck>
         <ThemeCustomization>
-          <ScrollTop>
-            <RouterProvider router={router} />
-          </ScrollTop>
+          <BrowserRouter>
+            <ScrollTop>
+              <RouterProvider router={router} />
+            </ScrollTop>
+          </BrowserRouter>
         </ThemeCustomization>
       </AuthCheck>
     </Provider>
