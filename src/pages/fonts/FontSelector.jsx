@@ -19,9 +19,14 @@ import {
   Stack,
   Button,
   Drawer,
-  Divider
+  Divider,
+  FormControlLabel,
+  Switch
 } from '@mui/material';
+// import { useSelector } from 'react-redux';
 import { FileSearchOutlined, OrderedListOutlined, TableOutlined, DownloadOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
+import { fontService } from 'services/fontService';
+import CopyTextButton from 'components/CopyTextButton';
 
 const FONT_CATEGORIES = ['Sans Serif', 'Serif', 'Script', 'Display', 'Decorative', 'Monospace', 'Calligraphy', 'Handwritten'];
 
@@ -30,6 +35,7 @@ const FONT_STYLES = ['Regular', 'Bold', 'Italic', 'Light', 'Medium', 'Black'];
 const FONT_USES = ['Logo', 'Branding', 'Website', 'Print', 'Packaging', 'Social Media'];
 
 const FontSelector = () => {
+  // const { user } = useSelector((state) => state.auth);
   const [fonts, setFonts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [fontSize, setFontSize] = useState(32);
@@ -53,29 +59,42 @@ const FontSelector = () => {
     uses: [],
     minDownloads: 0,
     maxPrice: 1000,
-    rating: 0
+    rating: 0,
+    hideDisabled: false
   });
 
   useEffect(() => {
-    const mockFonts = [
-      {
-        id: 1,
-        name: 'Arial Pro',
-        downloads: 1500,
-        isPro: true,
-        price: 29.99,
-        fontFamily: 'Arial',
-        category: 'Sans Serif',
-        styles: ['Regular', 'Bold', 'Italic'],
-        uses: ['Website', 'Branding'],
-        rating: 4.5,
-        previewText: 'The quick brown fox jumps over the lazy dog',
-        tags: ['modern', 'clean', 'professional']
-      }
-      // ... more fonts
-    ];
-    setFonts(mockFonts);
+    loadFonts();
   }, []);
+
+  const loadFonts = async () => {
+    try {
+      const searchParams = {
+        search: searchTerm,
+        categories: filters.categories,
+        styles: filters.styles,
+        uses: filters.uses,
+        minDownloads: filters.minDownloads,
+        maxPrice: filters.maxPrice,
+        rating: filters.rating,
+        hideDisabled: filters.hideDisabled
+      };
+
+      const response = await fontService.searchFonts(searchParams);
+      setFonts(response.data || []);
+    } catch (error) {
+      console.error('Error loading fonts:', error);
+      // Add error handling/notification here
+    }
+  };
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      loadFonts();
+    }, 500); // Debounce search to avoid too many API calls
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, filters]);
 
   const handleFontSizeChange = (event, newValue) => {
     setFontSize(newValue);
@@ -96,18 +115,6 @@ const FontSelector = () => {
     };
     setSampleText(texts[event.target.value]);
   };
-
-  const filteredFonts = fonts.filter((font) => {
-    const matchesSearch = font.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategories = filters.categories.length === 0 || filters.categories.some((cat) => font.category === cat);
-    const matchesStyles = filters.styles.length === 0 || filters.styles.some((style) => font.styles.includes(style));
-    const matchesUses = filters.uses.length === 0 || filters.uses.some((use) => font.uses.includes(use));
-    const matchesDownloads = font.downloads >= filters.minDownloads;
-    const matchesPrice = font.price <= filters.maxPrice;
-    const matchesRating = font.rating >= filters.rating;
-
-    return matchesSearch && matchesCategories && matchesStyles && matchesUses && matchesDownloads && matchesPrice && matchesRating;
-  });
 
   return (
     <Box sx={{ p: 3 }}>
@@ -264,9 +271,14 @@ const FontSelector = () => {
       {/* Fonts Grid/List */}
       {viewMode === 'grid' ? (
         <Grid container spacing={3}>
-          {filteredFonts.map((font) => (
+          {fonts.map((font) => (
             <Grid item xs={12} sm={6} md={4} key={font.id}>
-              <Card>
+              <Card
+                sx={{
+                  opacity: font.disabled ? 0.7 : 1,
+                  position: 'relative'
+                }}
+              >
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="h6">{font.name}</Typography>
@@ -291,6 +303,43 @@ const FontSelector = () => {
                   >
                     {sampleText}
                   </Typography>
+
+                  <Box sx={{ mt: 2, mb: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Sample Text:
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        bgcolor: 'grey.100',
+                        p: 1,
+                        borderRadius: 1
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontFamily: font.fontFamily,
+                          flex: 1,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
+                        }}
+                      >
+                        {sampleText}
+                      </Typography>
+                      <CopyTextButton font={font} type="text" tooltipTitle="Copy Text" textToCopy={sampleText} />
+                    </Box>
+
+                    <Typography variant="subtitle2" sx={{ mt: 2 }} gutterBottom>
+                      Integration Code:
+                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                      <CopyTextButton font={font} type="html" tooltipTitle="Copy HTML" />
+                      <CopyTextButton font={font} type="css" tooltipTitle="Copy CSS" />
+                      <CopyTextButton font={font} type="cdn" tooltipTitle="Copy CDN URL" />
+                    </Stack>
+                  </Box>
 
                   <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
                     {font.styles.map((style) => (
@@ -320,7 +369,7 @@ const FontSelector = () => {
         </Grid>
       ) : (
         <Card>
-          {filteredFonts.map((font) => (
+          {fonts.map((font) => (
             <Box
               key={font.id}
               sx={{
@@ -368,6 +417,43 @@ const FontSelector = () => {
               >
                 {sampleText}
               </Typography>
+
+              <Box sx={{ mt: 2, mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Sample Text:
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    bgcolor: 'grey.100',
+                    p: 1,
+                    borderRadius: 1
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: font.fontFamily,
+                      flex: 1,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
+                    {sampleText}
+                  </Typography>
+                  <CopyTextButton font={font} type="text" tooltipTitle="Copy Text" textToCopy={sampleText} />
+                </Box>
+
+                <Typography variant="subtitle2" sx={{ mt: 2 }} gutterBottom>
+                  Integration Code:
+                </Typography>
+                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                  <CopyTextButton font={font} type="html" tooltipTitle="Copy HTML" />
+                  <CopyTextButton font={font} type="css" tooltipTitle="Copy CSS" />
+                  <CopyTextButton font={font} type="cdn" tooltipTitle="Copy CDN URL" />
+                </Stack>
+              </Box>
 
               <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
                 {font.styles.map((style) => (
@@ -451,6 +537,22 @@ const FontSelector = () => {
               ))}
             </Select>
           </FormControl>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={filters.hideDisabled}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    hideDisabled: e.target.checked
+                  })
+                }
+              />
+            }
+            label="Hide Unavailable Fonts"
+            sx={{ mb: 2 }}
+          />
 
           <Divider sx={{ my: 2 }} />
 

@@ -1,6 +1,7 @@
 // material-ui
 // import { useTheme } from '@mui/material/styles';
-import logo from 'assets/images/logo_heytext.svg';
+import logo from 'assets/images/heytext_logo.jpg';
+// import logo from 'assets/images/logo_heytext.svg';
 /**
  * if you want to use image instead of <svg> uncomment following.
  *

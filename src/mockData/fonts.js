@@ -54,7 +54,18 @@ const generateMockFonts = () => {
       previewUrl: `/mock-previews/${i + 1}.png`,
       fontUrl: `/mock-fonts/${i + 1}.ttf`,
       tags: generateRandomTags(),
-      createdAt: new Date(Date.now() - Math.random() * 10000000000)
+      createdAt: new Date(Date.now() - Math.random() * 10000000000),
+      disabled: Math.random() > 0.8, // 20% chance of being disabled
+      sampleText: {
+        html: `<link href="${fontUrl}" rel="stylesheet">
+<style>
+  .font-${i + 1} {
+    font-family: '${fontName}', sans-serif;
+  }
+</style>`,
+        css: `font-family: '${fontName}', sans-serif;`,
+        googleFonts: `<link href="https://fonts.googleapis.com/css2?family=${fontName.replace(' ', '+')}&display=swap" rel="stylesheet">`
+      }
     });
   }
 

@@ -26,7 +26,7 @@ import {
   Stack
 } from '@mui/material';
 import { DeleteOutlined, EditOutlined, CloudUploadOutlined } from '@ant-design/icons';
-import { fontService } from '../../services/fontService';
+import { fontService } from 'services/fontService';
 
 const FONT_CATEGORIES = ['Sans Serif', 'Serif', 'Script', 'Display', 'Decorative', 'Monospace', 'Calligraphy', 'Handwritten'];
 
@@ -63,7 +63,7 @@ const FontManagement = () => {
   const loadFonts = async () => {
     try {
       const data = await fontService.getAllFonts();
-      setFonts(data);
+      setFonts(data?.data);
     } catch (error) {
       console.error('Error loading fonts:', error);
       // Add error handling/notification here
@@ -148,7 +148,7 @@ const FontManagement = () => {
     }
   };
 
-  const filteredFonts = fonts.filter((font) => {
+  const filteredFonts = fonts?.filter((font) => {
     const matchesSearch = font.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !filters.category || font.category === filters.category;
     const matchesStyle = !filters.style || font.styles.includes(filters.style);

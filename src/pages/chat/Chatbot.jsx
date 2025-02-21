@@ -81,7 +81,6 @@ const Chatbot = () => {
       }
 
       const data = await response.json();
-      console.log(data);
       return data.response;
     } catch (error) {
       console.error('Error calling API:', error);

@@ -1,16 +1,24 @@
 import axios from 'utils/axios';
-import { mockFonts } from '../mockData/fonts';
 
 export const fontService = {
   getAllFonts: async () => {
-    // Simulating API call delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return mockFonts;
+    const response = await axios.get(`/fonts`);
+    return response.data;
+  },
+
+  searchFonts: async (params) => {
+    try {
+      const response = await axios.get(`/fonts/search`, { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error searching fonts:', error);
+      throw error;
+    }
   },
 
   getFontFile: async (fontUrl) => {
     try {
-      const response = await fetch(fontUrl);
+      const response = await axios.get(fontUrl);
       const fontBlob = await response.blob();
       return URL.createObjectURL(fontBlob);
     } catch (error) {
@@ -32,18 +40,15 @@ export const fontService = {
       fontData.previewUrl = previewUrl;
     }
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500));
     const newFont = {
-      id: `font_${mockFonts.length + 1}`,
       ...fontData,
       downloads: 0,
       views: 0,
       rating: 0,
       createdAt: new Date()
     };
-    mockFonts.push(newFont);
-    return newFont;
+    const response = await axios.post(`/fonts`, newFont);
+    return response.data;
   },
 
   updateFont: async (id, fontData) => {
@@ -60,18 +65,23 @@ export const fontService = {
       }
     });
 
-    const response = await axios.put(`/${id}`, formData, {
+    const response = await axios.put(`/fonts/${id}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   },
 
   deleteFont: async (id) => {
-    await axios.delete(`/${id}`);
+    await axios.delete(`/fonts/${id}`);
   },
 
   toggleFontStatus: async (id) => {
-    const response = await axios.patch(`/${id}/toggle-status`);
+    const response = await axios.patch(`/fonts/${id}/toggle-status`);
+    return response.data;
+  },
+
+  downloadFont: async (id) => {
+    const response = await axios.get(`/fonts/${id}/download`);
     return response.data;
   }
 };
