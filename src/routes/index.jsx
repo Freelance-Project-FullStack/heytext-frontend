@@ -28,53 +28,60 @@ import NotFoundPage from 'pages/NotFoundPage';
 // Admin Route Guard
 // eslint-disable-next-line react/prop-types
 const AdminRoute = ({ children }) => {
-  const { isAuthenticated, role } = useSelector((state) => state.auth);
-  if (!isAuthenticated || role !== 'admin') {
-    return <Navigate to="/unauthorized" replace />;
-  }
-  return children;
+    const { isAuthenticated, role } = useSelector((state) => state.auth);
+    if (!isAuthenticated || role !== 'admin') {
+        return <Navigate to="/unauthorized" replace />;
+    }
+    return children;
 };
 
 // ==============================|| APP ROUTING ||============================== //
 
 const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<MinimalLayout />}>
-        <Route path="login" element={<AuthLogin />} />
-        <Route path="register" element={<AuthRegister />} />
-        <Route path="callback" element={<Callback />} />
-      </Route>
+    return (
+        <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<MinimalLayout />}>
+                <Route index element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<AuthLogin />} />
+                <Route path="/register" element={<AuthRegister />} />
+                <Route path="/callback" element={<Callback />} />
+            </Route>
 
-      {/* Protected User Routes */}
-      <Route element={<PrivateRoute />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/fonts" element={<FontSelector />} />
-        <Route path="/chat" element={<Chatbot />} />
-        <Route path="/courses" element={<CourseList />} />
-        <Route path="/subscription" element={<PricingPlans />} />
-      </Route>
+            {/* Protected User Routes */}
+            <Route path="/" element={<PrivateRoute />}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/fonts" element={<FontSelector />} />
+                <Route path="/chat" element={<Chatbot />} />
+                <Route path="/courses" element={<CourseList />} />
+                <Route path="/subscription" element={<PricingPlans />} />
+            </Route>
 
-      {/* Protected Admin Routes */}
-      <Route element={<AdminRoute />}>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="users" element={<UserManagement />} />
-          <Route path="courses" element={<CourseManagement />} />
-          <Route path="fonts" element={<FontManagement />} />
-          <Route path="transactions" element={<TransactionHistory />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
-      </Route>
+            {/* Protected Admin Routes */}
+            <Route
+                path="/admin"
+                element={
+                    <AdminRoute>
+                        <AdminLayout />
+                    </AdminRoute>
+                }
+            >
+                <Route index element={<AdminDashboard />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="courses" element={<CourseManagement />} />
+                <Route path="fonts" element={<FontManagement />} />
+                <Route path="transactions" element={<TransactionHistory />} />
+                <Route path="settings" element={<Settings />} />
+            </Route>
 
-      {/* Error & Unauthorized Routes */}
-      <Route path="/unauthorized" element={<UnauthorizedPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
+            {/* Error & Unauthorized Routes */}
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+    );
 };
 
 export default AppRoutes;
