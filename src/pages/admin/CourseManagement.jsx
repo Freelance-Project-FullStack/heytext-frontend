@@ -46,9 +46,6 @@ const CourseManagement = () => {
       try {
         const response = await axios.get(`/courses`);
         const data = response.data;
-        if (!data.success) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
         if (data.status === 'success') {
           setCourses(data.result.data);
         } else {
