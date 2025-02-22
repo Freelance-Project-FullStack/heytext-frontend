@@ -91,7 +91,7 @@ const Chatbot = () => {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    if (user.subscription != 'premium') {
+    if (user?.subscription != 'premium') {
       setMessages([
         ...messages,
         {
@@ -136,7 +136,7 @@ const Chatbot = () => {
 
   return (
     <Box sx={{ height: '90vh', display: 'flex', flexDirection: 'column', p: 2 }}>
-      {user.subscription != 'premium' && (
+      {user?.subscription != 'premium' && (
         <Alert
           severity="info"
           sx={{ mb: 2 }}
@@ -224,12 +224,12 @@ const Chatbot = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder={user.subscription == 'premium' ? 'Nhập câu hỏi của bạn...' : 'Nâng cấp Premium để sử dụng tính năng này'}
-          disabled={user.subscription != 'premium'}
+          placeholder={user?.subscription == 'premium' ? 'Nhập câu hỏi của bạn...' : 'Nâng cấp Premium để sử dụng tính năng này'}
+          disabled={user?.subscription != 'premium'}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={handleSend} disabled={!user.subscription == 'premium' || !input.trim()}>
+                <IconButton onClick={handleSend} disabled={!user?.subscription == 'premium' || !input.trim()}>
                   <SendOutlined />
                 </IconButton>
               </InputAdornment>

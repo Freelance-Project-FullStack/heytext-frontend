@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
@@ -8,13 +9,13 @@ import Chip from '@mui/material/Chip';
 
 // project import
 import Logo from './LogoMain';
-import config from 'config';
+// import config from 'config';
 
 // ==============================|| MAIN LOGO ||============================== //
 
 const LogoSection = ({ sx, to }) => {
   return (
-    <ButtonBase disableRipple component={Link} to={!to ? config.defaultPath : to} sx={sx}>
+    <ButtonBase disableRipple sx={sx}>
       <Stack direction="row" spacing={1} alignItems="center">
         <Logo />
         <Chip
