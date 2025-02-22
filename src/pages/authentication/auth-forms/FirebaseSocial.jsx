@@ -15,29 +15,25 @@ export default function FirebaseSocial() {
   // @ts-ignore
   const googleHandler = async () => {
     try {
-      const response = await fetch("https://auth-service.phongph.io.vn/auth/login", {
-        method: "POST", 
+      const response = await fetch('https://auth-service.phongph.io.vn/auth/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json", 
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          provider: "google",
-          redirectAfterLogin: `${window.location.origin}/callback`,
-        }),
+          provider: 'google',
+          redirectAfterLogin: `${window.location.origin}/callback`
+        })
       });
       const data = await response.json();
-
+      console.log('googleHandler: ----', data);
       if (data.code === 302) {
         window.location.href = data.url;
       }
-  
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error('Error during login:', error);
     }
   };
-  
-
-  
 
   const twitterHandler = async () => {
     // login || singup

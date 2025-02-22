@@ -8,7 +8,6 @@ import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
 import AuthCheck from './components/AuthCheck';
 
-
 // ==============================|| APP - THEME, ROUTER, LOCAL ||============================== //
 
 export default function App() {
@@ -16,9 +15,9 @@ export default function App() {
     <Provider store={store}>
       <AuthCheck>
         <ThemeCustomization>
-            <ScrollTop>
-              <RouterProvider router={router} />
-            </ScrollTop>
+          <ScrollTop>
+            <RouterProvider router={router} />
+          </ScrollTop>
         </ThemeCustomization>
       </AuthCheck>
     </Provider>

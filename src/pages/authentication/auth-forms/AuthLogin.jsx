@@ -49,7 +49,6 @@ const AuthLogin = () => {
         })
       );
       const redirectPath = location.state?.from || result.redirectPath;
-      console.log('redirectPath: --', redirectPath);
       navigate(redirectPath, { replace: true });
     } catch (err) {
       console.log(err.message);

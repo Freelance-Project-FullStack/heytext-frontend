@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 // project imports
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
-import PrivateRoute from 'components/PrivateRoute';
+// import PrivateRoute from 'components/PrivateRoute';
 import AdminLayout from 'layout/AdminLayout';
 
 // Lazy-loaded components
@@ -62,17 +62,14 @@ const MainRoutes = {
     { path: 'fonts', element: <FontSelector /> },
     { path: 'chat', element: <Chatbot /> },
     { path: 'courses', element: <CourseList /> },
-    // Redundant route since we have an admin route with 'dashboard' already
-    // { path: 'admin/dashboard', element: <PrivateRoute allowedRoles={['admin']}><AdminDashboard /></PrivateRoute> },
-    // Root path redirect to admin dashboard for admin users
-    {
-      path: '/',
-      element: (
-        <PrivateRoute allowedRoles={['admin']}>
-          <AdminDashboard />
-        </PrivateRoute>
-      )
-    },
+    // {
+    //   path: '/',
+    //   element: (
+    //     <PrivateRoute allowedRoles={['admin']}>
+    //       <AdminDashboard />
+    //     </PrivateRoute>
+    //   )
+    // },
     { path: '/unauthorized', element: <UnauthorizedPage /> },
     { path: '*', element: <NotFoundPage /> }
   ]
