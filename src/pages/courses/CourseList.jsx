@@ -79,7 +79,7 @@ const CourseList = () => {
         },
         body: JSON.stringify({
           soTien: course.price,
-          nguoiDung: user.name,
+          nguoiDung: user?._id,
           goiDangKy: `Mua khóa học: ${course.id}`,
           courseId: course.id
         })

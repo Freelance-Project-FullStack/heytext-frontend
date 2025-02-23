@@ -111,7 +111,7 @@ const TransactionHistory = () => {
                   <TableCell>{tx._id}</TableCell>
                   <TableCell>{tx.maGiaoDich}</TableCell>
                   <TableCell>{tx.nguoiDung}</TableCell>
-                  <TableCell>{tx.nguoiDung}</TableCell>
+                  <TableCell>{tx.goiDangKy}</TableCell>
                   <TableCell>{tx.soTien.toLocaleString('vi-VN')} VNĐ</TableCell>
                   <TableCell>{new Date(tx.ngayTao).toLocaleString('vi-VN')}</TableCell>
                   <TableCell>{getStatusChip(tx.trangThai)}</TableCell>

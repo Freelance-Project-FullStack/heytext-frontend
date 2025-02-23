@@ -81,7 +81,7 @@ const PaymentQRCode = ({ amount, orderId, label, packageId = 'Premium', ...rest 
     try {
       const res = await axios.post('/transaction', {
         soTien: amount,
-        nguoiDung: user?.id,
+        nguoiDung: user?._id,
         goiDangKy: packageId ? `Mua gói premium` : `Mua khóa học: ${orderId}`,
         courseId: orderId,
         packageId: packageId
