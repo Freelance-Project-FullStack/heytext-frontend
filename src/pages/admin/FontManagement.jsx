@@ -338,6 +338,22 @@ const FontManagement = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Url Font"
+                value={formData.fontUrl}
+                onChange={(e) => setFormData({ ...formData, fontUrl: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Url preview"
+                value={formData.previewUrl}
+                onChange={(e) => setFormData({ ...formData, previewUrl: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
               <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadOutlined />}>
                 Upload Font File
                 <input type="file" hidden accept=".ttf,.otf" onChange={(e) => handleFileUpload(e, 'fontFile')} />
