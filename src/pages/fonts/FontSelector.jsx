@@ -290,7 +290,7 @@ const FontSelector = () => {
 
                   <Typography
                     sx={{
-                      fontFamily: font.fontFamily,
+                      fontFamily: font.name,
                       fontSize: `${fontSize}px`,
                       fontWeight: fontStyles.weight,
                       letterSpacing: `${fontStyles.letterSpacing}px`,
@@ -320,7 +320,7 @@ const FontSelector = () => {
                     >
                       <Typography
                         sx={{
-                          fontFamily: font.fontFamily,
+                          fontFamily: font.name,
                           flex: 1,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis'
@@ -404,7 +404,7 @@ const FontSelector = () => {
 
               <Typography
                 sx={{
-                  fontFamily: font.fontFamily,
+                  fontFamily: font.name,
                   fontSize: `${fontSize}px`,
                   fontWeight: fontStyles.weight,
                   letterSpacing: `${fontStyles.letterSpacing}px`,
@@ -434,7 +434,7 @@ const FontSelector = () => {
                 >
                   <Typography
                     sx={{
-                      fontFamily: font.fontFamily,
+                      fontFamily: font.name,
                       flex: 1,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
